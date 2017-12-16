@@ -13,7 +13,7 @@ public class FXMLRoadRaceController {
     private Level model;
     private LevelView view;
     
-       @FXML
+    @FXML
     private AnchorPane paneel;
 
     @FXML
@@ -50,11 +50,19 @@ public class FXMLRoadRaceController {
         switch (e.getCode()){
             case LEFT:
                 model.beweegSpelerLinks();
-                updateViews();
+                //updateViews();
                 break;
             case RIGHT:
                 model.beweegSpelerRechts();
-                updateViews();
+                //updateViews();
+                break;
+            case UP:
+                model.beweegSpelerBoven();
+                //updateViews();
+                break;
+            case DOWN:
+                model.beweegSpelerOnder();
+                //updateViews();
                 break;
         }
         
@@ -62,6 +70,10 @@ public class FXMLRoadRaceController {
     }
     
     public void updateViews(){
+        //paneel.getChildren().clear();
         view.updateVWViews();
+        fuelbar.setProgress(model.getBrandstof());
+        damagebar.setProgress(model.getBeschadiging());
     }
+    
 }

@@ -17,14 +17,13 @@ import javafx.scene.shape.Rectangle;
  * @author Soufiane
  */
 public class LevelView extends Region{
-    public final static int GROOTTEPANEEL = 5;
+    public final static int VERGROTING = 25;
     private Level model;
     private ArrayList<VoorwerpView> vwViews;
     
     
     public LevelView(Level model) {
         this.model = model;
-        
         this.initBackground();
         this.addVoorwerpenViews();
     }
@@ -58,6 +57,8 @@ public class LevelView extends Region{
             vww.update();
         }
     }
+    
+    
     
     
     

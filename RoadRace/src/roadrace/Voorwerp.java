@@ -13,7 +13,7 @@ public class Voorwerp {
     
     private VoorwerpType type;
     private int voorwerpX, voorwerpY;
-    private int lengteVW;
+    private int lengteVW, breedteVW;
     private boolean richting; 
     private boolean dood;
     
@@ -46,7 +46,8 @@ public class Voorwerp {
                 this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 2;
+                this.lengteVW = 1;
+                this.breedteVW = 1;
                 break;
             
             case TEGENLIGGER:
@@ -54,7 +55,8 @@ public class Voorwerp {
                 this.beschadigingAanZichzelf = 0.3;
                 this.duwbaar = true;
                 this.neembaar = false;
-                this.lengteVW = 2;
+                this.lengteVW = 1;
+                this.breedteVW = 1;
                 break;
                 
             case BRANDSTOF:
@@ -63,6 +65,7 @@ public class Voorwerp {
                 this.duwbaar = false;
                 this.neembaar = true;
                 this.lengteVW = 1;
+                this.breedteVW = 1;
                 break;
                 
             case MUUR:
@@ -70,7 +73,8 @@ public class Voorwerp {
                 this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 3;
+                this.lengteVW = 1;
+                this.breedteVW = 1;
                 break;   
         }
     }
@@ -115,21 +119,48 @@ public class Voorwerp {
        return this.lengteVW; 
     }
     
+    public int getBreedteVW(){
+        return this.breedteVW;
+    }
     // Setters
     
     public void setDood(boolean dood) {
         this.dood = dood;
     }
-    
-    public void verplaatsLinks(){
-        this.voorwerpX -=5;
+
+    public void setTotBeschadigingVW(double totBeschadigingVW) {
+        this.totBeschadigingVW = totBeschadigingVW;
     }
     
     
-    public void verplaatsRechts(){
-        this.voorwerpX +=5;
+    public void verplaatsLinks(int dx){
+        this.voorwerpX -=dx;
     }
     
+    public void verplaatsRechts(int dx){
+        this.voorwerpX +=dx;
+    }
+    
+    public void verplaatsOnder(int dy){
+        this.voorwerpY +=dy;
+    }
+    
+    public void verplaatsBoven(int dy){
+        this.voorwerpY -=dy;
+    }
+    
+    
+    
+    
+    public boolean isOp(int doelX, int doelY){
+        System.out.println(this.type+" Voorwerp X: " + this.voorwerpX);
+        System.out.println(this.type+" Voorwerp Y: " + this.voorwerpY );
+        if ((this.voorwerpX == doelX && this.voorwerpY==doelY)){
+                return true;
+        }
+        return false;
+        
+    }
     
     
     
