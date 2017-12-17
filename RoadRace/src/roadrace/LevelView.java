@@ -30,7 +30,7 @@ public class LevelView extends Region{
     
     private void initBackground(){
         Rectangle achtergrond = new  Rectangle(0, 0, 600, 500);
-        achtergrond.setFill(Color.GREENYELLOW);
+        achtergrond.setFill(Color.GREY);
         
         getChildren().add(achtergrond);
     }

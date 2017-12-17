@@ -12,5 +12,5 @@ package roadrace;
  */
 public enum VoorwerpType 
 {
-    SPELER, TEGENLIGGER, BRANDSTOF, MUUR 
+    SPELER, VOERTUIG, BRANDSTOF, HERSTELLING, MUUR
 }

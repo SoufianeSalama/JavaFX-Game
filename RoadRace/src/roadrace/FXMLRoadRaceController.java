@@ -44,29 +44,38 @@ public class FXMLRoadRaceController {
         
         view = new LevelView(model);
         paneel.getChildren().add(view);
+        
+       
     }
     
     public void beweegSpeler(KeyEvent e){
-        switch (e.getCode()){
-            case LEFT:
-                model.beweegSpelerLinks();
-                //updateViews();
-                break;
-            case RIGHT:
-                model.beweegSpelerRechts();
-                //updateViews();
-                break;
-            case UP:
-                model.beweegSpelerBoven();
-                //updateViews();
-                break;
-            case DOWN:
-                model.beweegSpelerOnder();
-                //updateViews();
-                break;
+        if (!model.speler.isDood()){
+            switch (e.getCode()){
+                case LEFT:
+                    model.beweegSpelerLinks();
+                    //updateViews();
+                    break;
+                case RIGHT:
+                    model.beweegSpelerRechts();
+                    //updateViews();
+                    break;
+                case UP:
+                    model.beweegSpelerBoven();
+                    //updateViews();
+                    break;
+                case DOWN:
+                    model.beweegSpelerOnder();
+                    //updateViews();
+                    break;
+            }
+            this.updateViews();
+        }
+        else
+        {
+            System.out.println("Speler is dood"); 
+            // ga naar score scherm
         }
         
-        this.updateViews();
     }
     
     public void updateViews(){
@@ -74,6 +83,10 @@ public class FXMLRoadRaceController {
         view.updateVWViews();
         fuelbar.setProgress(model.getBrandstof());
         damagebar.setProgress(model.getBeschadiging());
+        level.setText(Integer.toString(model.getLevel()));
+        snelheid.setText(Integer.toString(model.getSnelheid()));
+        afstand.setText(Integer.toString(model.getTotAfstand()));
+        
     }
     
 }

@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.StrokeType;
 
 /**
  *
@@ -17,82 +18,108 @@ import javafx.scene.shape.Rectangle;
  */
 public class VoorwerpView extends Group{
     private Voorwerp vw;
-    
-    private AnchorPane vwView;
+    private Rectangle voorwerpVW;
+    private Circle vijandIndicator;
+    private int GROOTTE;
 
     public VoorwerpView(Voorwerp voorwerp) {
         this.vw = voorwerp;
-        vwView  = new AnchorPane();
+        this.GROOTTE = LevelView.VERGROTING;
+        
+        voorwerpVW = new Rectangle();
+        
         
         switch (this.vw.getType()){
             case SPELER:
-                Rectangle spelerView = this.tekenSpeler();
-                vwView.getChildren().add(spelerView);
+                voorwerpVW = tekenSpeler();
+                getChildren().add(voorwerpVW);
                 break;
+            case VOERTUIG:
+                voorwerpVW = tekenVoertuig();
+                if (voorwerp.isVijand()){
+                    vijandIndicator = tekenIndicator();
+                    vijandIndicator.translateXProperty().bind(voorwerpVW.translateXProperty());
+                    vijandIndicator.translateYProperty().bind(voorwerpVW.translateYProperty());
+                    getChildren().addAll(voorwerpVW,vijandIndicator);
+                }
+                else{
+                    getChildren().add(voorwerpVW);
+                }
                 
-            case BRANDSTOF:
-                //Circle brandstofView = this.tekenBrandstof();
-                Rectangle brandstofView = this.tekenBrandstof();
-                vwView.getChildren().add(brandstofView);
                 break;
-            
-            case TEGENLIGGER:
-                Rectangle tegenliggerView = this.tekenTegenligger();
-                vwView.getChildren().add(tegenliggerView);
-                break;
-                
             case MUUR:
-                Rectangle muurView = this.tekenMuur();
-                vwView.getChildren().add(muurView);
-                break;
+                voorwerpVW = tekenMuur();
+                getChildren().add(voorwerpVW);
+                break;    
+            case BRANDSTOF:
+                voorwerpVW = tekenBrandstof();
+                getChildren().add(voorwerpVW);
+                break;   
         }
         
-        getChildren().add(vwView);
         
+        //getChildren().add(voorwerpVW);
         update();
     }
     
     public void update(){
-        vwView.setTranslateX(vw.getVoorwerpX()*LevelView.VERGROTING);
+        this.voorwerpVW.setTranslateX(this.vw.getVoorwerpX() * this.GROOTTE);
+        this.voorwerpVW.setTranslateY(this.vw.getVoorwerpY() * this.GROOTTE);
         
-        vwView.setTranslateY(vw.getVoorwerpY()*LevelView.VERGROTING);
+        if (this.vw.getType() == VoorwerpType.SPELER || this.vw.getType() == VoorwerpType.VOERTUIG){
+             if (vw.getTotBeschadigingVW() >=0.00 && vw.getTotBeschadigingVW() <=0.33){
+                    this.voorwerpVW.setFill(Color.GREEN);
+                }
+                else if (vw.getTotBeschadigingVW() >=0.34 && vw.getTotBeschadigingVW() <=0.67){
+                    this.voorwerpVW.setFill(Color.ORANGE);
+                }
+                else if (vw.getTotBeschadigingVW() >=0.68 && vw.getTotBeschadigingVW() <=1){
+                    this.voorwerpVW.setFill(Color.RED);
+                }
+        }
+        if (this.vw.getType() == VoorwerpType.VOERTUIG && this.vw.isVijand()){
+            if (this.vw.isDood()){
+                this.vijandIndicator.setStroke(Color.DARKRED);
+            }
+        }
+        if (this.vw.getType()==VoorwerpType.BRANDSTOF && this.vw.isDood()){
+            getChildren().remove(vw);
+        }
         
     }
     
     private Rectangle tekenSpeler(){
-        Rectangle spelerView = new Rectangle(0,0,(LevelView.VERGROTING * vw.getLengteVW()) , (LevelView.VERGROTING * vw.getLengteVW()));
-        //vwView = new Rectangle(0,0,35 ,35);
-        spelerView.setFill(Color.RED);   
+        Rectangle spelerView = new Rectangle(0,0, vw.getBreedteVW()*GROOTTE ,vw.getLengteVW()*GROOTTE);
         return spelerView;
     }
     
     private Rectangle tekenBrandstof(){
-        /*Circle brandstofView = new Circle(LevelView.VERGROTING * vw.getLengteVW()/2, Color.YELLOW);
-        return brandstofView;*/
-        
-        Rectangle spelerView = new Rectangle(0,0,(LevelView.VERGROTING * vw.getLengteVW()) , (LevelView.VERGROTING * vw.getLengteVW()));
-        //vwView = new Rectangle(0,0,35 ,35);
-        spelerView.setFill(Color.YELLOW);   
-        return spelerView;
-        
+        Rectangle brandstofView = new Rectangle(0, 0, vw.getBreedteVW()*GROOTTE, vw.getLengteVW()*GROOTTE);
+        return brandstofView;        
     }
     
-    private Rectangle tekenTegenligger(){
-        Rectangle spelerView = new Rectangle(0,0,(LevelView.VERGROTING * vw.getLengteVW()) , (LevelView.VERGROTING * vw.getLengteVW()));
-        //vwView = new Rectangle(0,0,35 ,35);
-        spelerView.setFill(Color.BLUE);   
-        return spelerView;
+    private Rectangle tekenVoertuig(){
+        Rectangle tegenliggerView = new Rectangle(0,0,GROOTTE * vw.getBreedteVW() , GROOTTE * vw.getLengteVW());
+        tegenliggerView.setFill(Color.WHITE);   
+        return tegenliggerView;
     }
     
     private Rectangle tekenMuur(){
-        Rectangle muurView = new Rectangle(0, 0, LevelView.VERGROTING * vw.getBreedteVW(), LevelView.VERGROTING * vw.getLengteVW());
-        muurView.setFill(Color.DARKGRAY);
+        Rectangle muurView = new Rectangle(0,0,GROOTTE * vw.getBreedteVW() , GROOTTE * vw.getLengteVW());
+        muurView.setFill(Color.DARKGREY);   
         return muurView;
     }
     
-    public void removeVoorwerpView(Voorwerp vw){
-        vwView.getChildren().remove(vw);
+    private Circle tekenIndicator(){
+        Circle ic = new Circle(vw.getBreedteVW()*GROOTTE/2, vw.getBreedteVW()*GROOTTE/2, vw.getBreedteVW()*GROOTTE);
+        ic.setStrokeType(StrokeType.INSIDE);
+        ic.setStrokeWidth(3);
+        ic.setStroke(Color.LIGHTGREEN);
+        ic.setFill(null);
+        return ic;
     }
+    
+   
     
     
 }

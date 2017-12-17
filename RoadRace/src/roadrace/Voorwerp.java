@@ -16,7 +16,6 @@ public class Voorwerp {
     private int lengteVW, breedteVW;
     private boolean richting; 
     private boolean dood;
-    
     // BESCHADEGING 
     private double totBeschadigingVW;
     private double beschadigingAanZichzelf;
@@ -25,13 +24,17 @@ public class Voorwerp {
     // DUWBAAR/NEEMBAAR
     private boolean duwbaar, neembaar;
     
+    // VIJAND
+    private boolean vijand;
+    
     
 
-    public Voorwerp(VoorwerpType type, int x, int y, boolean richting) {
+    public Voorwerp(VoorwerpType type, int x, int y, boolean richting, boolean vijand) {
         this.type = type;
         this.voorwerpX = x;
         this.voorwerpY = y;
         this.richting = richting;
+        this.vijand = vijand;
         
         this.dood = false;
         this.totBeschadigingVW = 0.00;
@@ -46,17 +49,17 @@ public class Voorwerp {
                 this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 1;
-                this.breedteVW = 1;
+                this.lengteVW = 2;
+                this.breedteVW = 2;
                 break;
             
-            case TEGENLIGGER:
+            case VOERTUIG:
                 this.beschadigingAanSpeler = 0.2;
                 this.beschadigingAanZichzelf = 0.3;
                 this.duwbaar = true;
                 this.neembaar = false;
-                this.lengteVW = 1;
-                this.breedteVW = 1;
+                this.lengteVW = 2;
+                this.breedteVW = 2;
                 break;
                 
             case BRANDSTOF:
@@ -74,7 +77,7 @@ public class Voorwerp {
                 this.duwbaar = false;
                 this.neembaar = false;
                 this.lengteVW = 1;
-                this.breedteVW = 1;
+                this.breedteVW = 2;
                 break;   
         }
     }
@@ -111,6 +114,10 @@ public class Voorwerp {
         return duwbaar;
     }
 
+    public boolean isVijand() {
+        return vijand;
+    }
+
     public boolean isNeembaar() {
         return neembaar;
     }
@@ -129,7 +136,11 @@ public class Voorwerp {
     }
 
     public void setTotBeschadigingVW(double totBeschadigingVW) {
-        this.totBeschadigingVW = totBeschadigingVW;
+        
+        this.totBeschadigingVW += totBeschadigingVW;
+        if (this.totBeschadigingVW>=1.00){
+            this.dood = true;
+        }
     }
     
     
@@ -153,13 +164,26 @@ public class Voorwerp {
     
     
     public boolean isOp(int doelX, int doelY){
-        System.out.println(this.type+" Voorwerp X: " + this.voorwerpX);
-        System.out.println(this.type+" Voorwerp Y: " + this.voorwerpY );
-        if ((this.voorwerpX == doelX && this.voorwerpY==doelY)){
-                return true;
-        }
-        return false;
+//        System.out.println("DoelX: "+ doelX);
+//        System.out.println("DoelY: "+ doelY);
+//        
+//        System.out.println(this.type+" Voorwerp X: " + this.voorwerpX + " breedte = " + this.breedteVW );
+//        System.out.println(this.type+" Voorwerp Y: " + this.voorwerpY + " lengte = " + this.lengteVW);
+//        if (this.voorwerpX == doelX ){
+//            if (this.voorwerpY == doelY){
+//                return true;
+//            }
+//        }
+//        return false;
         
+         if (this.voorwerpX == doelX || this.voorwerpX+(this.breedteVW/2) ==doelX || this.voorwerpX-(this.breedteVW/2) ==doelX ){
+             
+             if (this.voorwerpY == doelY || this.voorwerpY-(this.lengteVW/2) ==doelY || this.voorwerpY+(this.lengteVW/2) ==doelY){
+                return true;
+            }
+         }
+        
+       return false;
     }
     
     

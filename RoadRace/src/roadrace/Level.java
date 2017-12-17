@@ -14,7 +14,7 @@ import java.util.Iterator;
  */
 public class Level {
     
-    private final static int levelBreedte = 22;
+    private final static int levelBreedte = 23;
     private final static int levelLengte = 19;
     
     private ArrayList<Voorwerp> voorwerpen;
@@ -24,7 +24,7 @@ public class Level {
     
     private double brandstof, beschadiging;
     
-    private Voorwerp speler;
+    public Voorwerp speler;
     
             
     public Level() {
@@ -43,17 +43,21 @@ public class Level {
         // hoogte van paneel is 500
         voorwerpen = new ArrayList<>();
         
-        speler = new Voorwerp(VoorwerpType.SPELER, this.spelerX, this.spelerY, true);
+        // Muur opbouwen
+        for (int a=0; a<=levelLengte; a++){
+            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a, true, false));
+            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 20, a, true, false));
+        }
+        
+        speler = new Voorwerp(VoorwerpType.SPELER, this.spelerX, this.spelerY, true, false);
         voorwerpen.add(speler);
 
-        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 16, true));
-        voorwerpen.add(new Voorwerp(VoorwerpType.TEGENLIGGER, 10, 5, true));
+        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 16, true, false));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 4, 8, true, true));
         
-        for (int a=0; a<=levelLengte; a++){
-            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a, true));
-            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 21, a, true));
-
-        }
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, false));
+        
+        
 
         
     }
@@ -110,9 +114,9 @@ public class Level {
     private boolean controleerVerplaatsing(int doelX, int doelY){
         
         // Grens: linker- en rechterzijde
-        if ((doelX < 0) || (doelX>=levelBreedte)){
+        /*if ((doelX < 0) || (doelX>levelBreedte)){
             return false;
-        }
+        }*/
         // Grens: boven- en onderzijde
         if ((doelY < 2) || (doelY>levelLengte-2)){
             return false;
@@ -127,22 +131,29 @@ public class Level {
                     this.brandstof = 1.00;
                     voorwerpen.remove(vw);
                     // Verwijder voorwerp brandstof
+                    vw.setDood(true);
                     
                     return true;
                 }
                 else if (vw.getType()==VoorwerpType.MUUR){
                     // Beschadiging
                     System.out.println("Speler raakt muur");
-                    this.beschadiging += vw.getBeschadigingAanSpeler();
+                    this.speler.setTotBeschadigingVW(vw.getBeschadigingAanSpeler());
+                    this.beschadiging = this.speler.getTotBeschadigingVW();
+                    
                     return false;
                 }
                 
-                else if (vw.getType()==VoorwerpType.TEGENLIGGER){
+                else if (vw.getType()==VoorwerpType.VOERTUIG){
                     // Beschadiging
-                    System.out.println("Speler raakt tegenligger");
-                    this.beschadiging += vw.getBeschadigingAanSpeler();
+                    System.out.println("Speler raakt voertuig");
+                    this.speler.setTotBeschadigingVW(vw.getBeschadigingAanSpeler());
+                   
+                    this.beschadiging = this.speler.getTotBeschadigingVW();
                     // Verplaats tegenligger
+                    System.out.println("Totale beschadiging tegenligger: "  + vw.getTotBeschadigingVW());
                     vw.setTotBeschadigingVW(vw.getBeschadigingAanZichzelf());
+                    
                     vw.verplaatsBoven(1);
                     return false;
                 }
@@ -167,6 +178,19 @@ public class Level {
     public double getBeschadiging() {
         return beschadiging;
     }
+
+    public int getSnelheid() {
+        return snelheid;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getTotAfstand() {
+        return totAfstand;
+    }
+    
     
     
     
