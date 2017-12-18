@@ -33,6 +33,11 @@ public class RoadRace extends Application {
         FXMLRoadRaceController controller = lader.getController();
         controller.setModel(model);
         
+        Beweging b = new Beweging(model, controller);
+        Thread t = new Thread(b);
+        t.setDaemon(true);
+        t.start();
+        
         Scene s = new Scene(root);
         
         stage.setScene(s);

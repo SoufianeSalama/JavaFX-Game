@@ -26,6 +26,8 @@ public class Level {
     
     public Voorwerp speler;
     
+    private int snelheidBeweging, afstandTick;
+    
             
     public Level() {
         init();
@@ -33,14 +35,12 @@ public class Level {
     
     public void init(){
         this.level = 1;
-        this.totAfstand = 0;
-        this.snelheid = 50;
+        this.setLevelParam();
         
         this.spelerX = 8;
         this.spelerY = 16;
         
-        // breedte van paneel is 600
-        // hoogte van paneel is 500
+        
         voorwerpen = new ArrayList<>();
         
         // Muur opbouwen
@@ -51,11 +51,10 @@ public class Level {
         
         speler = new Voorwerp(VoorwerpType.SPELER, this.spelerX, this.spelerY, true, false);
         voorwerpen.add(speler);
-
         voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 16, true, false));
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 4, 8, true, true));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 4, 8, true, false));
         
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, false));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, true));
         
         
 
@@ -131,7 +130,7 @@ public class Level {
                     this.brandstof = 1.00;
                     voorwerpen.remove(vw);
                     // Verwijder voorwerp brandstof
-                    vw.setDood(true);
+                    //vw.setDood(true);
                     
                     return true;
                 }
@@ -145,7 +144,7 @@ public class Level {
                 }
                 
                 else if (vw.getType()==VoorwerpType.VOERTUIG){
-                    // Beschadiging
+                     // Beschadiging
                     System.out.println("Speler raakt voertuig");
                     this.speler.setTotBeschadigingVW(vw.getBeschadigingAanSpeler());
                    
@@ -154,7 +153,16 @@ public class Level {
                     System.out.println("Totale beschadiging tegenligger: "  + vw.getTotBeschadigingVW());
                     vw.setTotBeschadigingVW(vw.getBeschadigingAanZichzelf());
                     
+                    
+                    if (vw.isVijand() && vw.isDood()){
+                        // Speler raakt vijand en is dood
+                        // Level verhogen
+                        
+                    }
+                    
+                    // Berekenen hoe een voertuig wordt geduwd na een botsing
                     vw.verplaatsBoven(1);
+                    
                     return false;
                 }
             }
@@ -162,10 +170,92 @@ public class Level {
         return true;
     }
     
+    private void verhoogLevel(){
+        if (this.level<5){
+            this.level++;
+            this.setLevelParam();
+        }
+        else{
+            // Speler heeft gewonnen
+        }
+    }
     
-    public Iterator<Voorwerp> getVoorwerpenLijst()
-    {
-        return this.voorwerpen.iterator();
+    private void setLevelParam(){
+        switch (this.level){
+            case (1):
+                this.snelheid = 50;
+                this.snelheidBeweging = 800;
+                this.brandstof = 1;
+                break;
+            case (2):
+                this.snelheid = 75;
+                this.snelheidBeweging = 600;
+                break;
+              
+            case (3):
+                this.snelheid = 100;
+                this.snelheidBeweging = 400;
+                break;
+            case (4):
+                this.snelheid = 125;
+                this.snelheidBeweging = 300;
+                break;
+            case (5):
+                this.snelheid = 150;
+                this.snelheidBeweging = 200;
+                break;
+            
+        }
+        this.afstandTick = this.snelheidBeweging/this.snelheid;
+    }
+    
+   
+    
+    
+     // Beweging thread (Voorwerpen vallen)
+    public void beweegVoorwerpen(){
+        System.out.println("Beweeg Voorwerpen");
+        int doelX, doelY;
+        
+        for (Voorwerp vw: voorwerpen){
+            doelX = vw.getVoorwerpX();
+            doelY = vw.getVoorwerpY()+1;
+            
+            
+             // enkel gewone voertuigen en brandstof mogen bewegen (vallen) worden
+            if (vw.getType() == VoorwerpType.VOERTUIG){
+                
+                if (vw.isOp(doelX,doelY)){
+                
+                // Beschadiging aan speler/Vijand -> er valt een voertuig op de speler...
+                    if (vw.getType()==VoorwerpType.SPELER){
+                        // Beschadiging
+                        System.out.println("Speler raakt voertuig");
+                        this.speler.setTotBeschadigingVW(vw.getBeschadigingAanSpeler());
+
+                        this.beschadiging = this.speler.getTotBeschadigingVW();
+                        // Verplaats tegenligger
+                        System.out.println("Totale beschadiging tegenligger: "  + vw.getTotBeschadigingVW());
+                        vw.setTotBeschadigingVW(vw.getBeschadigingAanZichzelf());
+
+                        vw.verplaatsBoven(1);
+                    }
+                }
+                else{
+                     vw.verplaatsOnder(1);
+                }
+               
+            }
+            
+        }
+        
+        // Afstand verhogen
+        this.totAfstand += this.afstandTick;
+        // Brandstof verlagen
+        if (this.brandstof>=0){
+             this.brandstof -=0.02;
+        }
+       
     }
     
     
@@ -191,6 +281,12 @@ public class Level {
         return totAfstand;
     }
     
+    public Iterator<Voorwerp> getVoorwerpenLijst()
+    {
+        return this.voorwerpen.iterator();
+    }
+    
+   
     
     
     

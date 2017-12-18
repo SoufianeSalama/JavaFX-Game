@@ -16,7 +16,8 @@ public class Voorwerp {
     private int lengteVW, breedteVW;
     private boolean richting; 
     private boolean dood;
-    // BESCHADEGING 
+    
+    // BESCHADIGING 
     private double totBeschadigingVW;
     private double beschadigingAanZichzelf;
     private double beschadigingAanSpeler;
@@ -26,6 +27,9 @@ public class Voorwerp {
     
     // VIJAND
     private boolean vijand;
+    
+    // BEWEGING (VALT)
+    private boolean beweegt = false;
     
     
 
@@ -49,7 +53,7 @@ public class Voorwerp {
                 this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 2;
+                this.lengteVW = 3;
                 this.breedteVW = 2;
                 break;
             
@@ -60,6 +64,7 @@ public class Voorwerp {
                 this.neembaar = false;
                 this.lengteVW = 2;
                 this.breedteVW = 2;
+                this.beweegt = true;
                 break;
                 
             case BRANDSTOF:
@@ -67,8 +72,8 @@ public class Voorwerp {
                 this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = true;
-                this.lengteVW = 1;
-                this.breedteVW = 1;
+                this.lengteVW = 2;
+                this.breedteVW = 2;
                 break;
                 
             case MUUR:
@@ -77,7 +82,7 @@ public class Voorwerp {
                 this.duwbaar = false;
                 this.neembaar = false;
                 this.lengteVW = 1;
-                this.breedteVW = 2;
+                this.breedteVW = 1;
                 break;   
         }
     }

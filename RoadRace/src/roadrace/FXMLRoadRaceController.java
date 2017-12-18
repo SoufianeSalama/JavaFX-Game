@@ -84,9 +84,11 @@ public class FXMLRoadRaceController {
         fuelbar.setProgress(model.getBrandstof());
         damagebar.setProgress(model.getBeschadiging());
         level.setText(Integer.toString(model.getLevel()));
-        snelheid.setText(Integer.toString(model.getSnelheid()));
-        afstand.setText(Integer.toString(model.getTotAfstand()));
+        snelheid.setText(Integer.toString(model.getSnelheid()) + "KM/U");
+        afstand.setText(Integer.toString(model.getTotAfstand()) + "m");
         
     }
+    
+    
     
 }
