@@ -31,7 +31,7 @@ public class RoadRace extends Application {
         Beweging b = new Beweging(model, controller);
         Thread t = new Thread(b);
         t.setDaemon(true);
-        //t.start();
+        t.start();
         
         Scene s = new Scene(root);
         

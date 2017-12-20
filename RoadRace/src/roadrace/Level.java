@@ -44,18 +44,18 @@ public class Level {
         voorwerpen = new ArrayList<>();
         
         // Muur opbouwen
-        for (int a=0; a<levelLengte; a++){
-            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a, true, false));
-            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 20, a, true, false));
-        }
+//        for (int a=0; a<levelLengte; a++){
+//            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a, true, false));
+//            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 20, a, true, false));
+//        }
         
         speler = new Voorwerp(VoorwerpType.SPELER, this.spelerX, this.spelerY, true, false);
         voorwerpen.add(speler);
-//        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 16, true, false));
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 12, 11, true, false));
+        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 0, true, false));
+//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 12, 11, true, false));
         
         voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, false));
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 15, true, false));
+//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 15, true, false));
 
     }
     
@@ -124,7 +124,7 @@ public class Level {
                     if (vw.getType()==VoorwerpType.BRANDSTOF){
                         System.out.println("Speler raakt brandstof");
                         this.brandstof = 1.00;
-                        voorwerpen.remove(vw);
+                        //voorwerpen.remove(vw);
                         return true;
                     }
                     else if (vw.getType()==VoorwerpType.MUUR){
@@ -207,7 +207,7 @@ public class Level {
     }
    
     /**
-     * Deze methode bepaalt de richting van een voertuig nadat de speler of een ander voertuig hier tegenaan botst
+     * Deze methode bepaalt de richting vd verplaatsing van een voertuig nadat de speler of een ander voertuig hier tegenaan botst
      * eerste parameters is het voorwerp dat gaat botsen (ACTIE)
      * tweede parameters is het voorwerp dat gebotst wordt  (REACTIE)
      */
@@ -343,6 +343,65 @@ public class Level {
      // Beweging thread (Voorwerpen vallen)
     public void beweegVoorwerpen(){
         System.out.println("Beweeg Voorwerpen");
+        int dy = 1;
+        int doelX = 0;
+        int doelY = 0;
+        
+        for (Voorwerp vw: voorwerpen){
+            doelX = vw.getVoorwerpX();
+            doelY = vw.getVoorwerpY() + dy;
+            
+            if( vw.getType() != VoorwerpType.SPELER){
+                
+                if (!speler.isOp(vw, doelX,doelY)){
+                    // Speler bevindt zich NIET onder een vallend voorwerp
+                    if (vw.getType()==VoorwerpType.BRANDSTOF || vw.getType()==VoorwerpType.VOERTUIG){
+                         vw.verplaatsOnder(dy);
+                    }
+                }
+                
+                else{
+                    // Speler bevindt zich onder een vallend voorwerp
+                    if (vw.getType()==VoorwerpType.BRANDSTOF){
+                        // Brandstof opgepakt
+                        this.brandstof=1;
+                        //this.voorwerpen.remove(vw);
+                        
+                    }
+                    else if (vw.getType()==VoorwerpType.VOERTUIG){
+                        System.out.println("Voertuig raakt speler");
+                        this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
+                        this.beschadiging = this.speler.getTotBeschadigingVW();
+
+                        vw.setTotBeschadigingVW(this.speler.getBeschadigingAanAnderen());
+
+                        if (vw.isVijand() && vw.isDood()){
+                            // Speler raakt vijand en is dood
+                            // Level verhogen
+                            System.out.println("Vijand verslagen -> Verhoog level");
+                            this.verhoogLevel();
+                        }
+
+                        // Berekenen hoe een voertuig wordt geduwd na een botsing
+                        // eerste parameters is het voorwerp dat gaat botsen 
+                        // tweede parameters id het voorwerp dat gebotst wordt
+                        this.botsting(vw,speler);
+
+                    }
+                    
+                }
+                
+                
+            }
+                
+
+//            if (vw.getType()==VoorwerpType.VOERTUIG && !vw.isVijand()){
+//               vw.verplaatsOnder(dy);
+//            }
+                    
+                   
+             
+        }
         
         // Afstand verhogen
         this.totAfstand += this.afstandTick;

@@ -46,7 +46,8 @@ public class VoorwerpView extends Group{
                 break;
             case BRANDSTOF:
                 ImageView ivBrandstof = this.tekenBrandstof();
-                paneel.getChildren().add(ivBrandstof);
+                Rectangle test = this.tekenMuur();
+                paneel.getChildren().add(test);
                 break;
             case VOERTUIG:
                 Rectangle voertuig  = tekenVoertuig();
