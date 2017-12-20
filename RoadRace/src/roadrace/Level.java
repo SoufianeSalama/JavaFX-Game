@@ -44,21 +44,17 @@ public class Level {
         voorwerpen = new ArrayList<>();
         
         // Muur opbouwen
-        for (int a=0; a<=levelLengte; a++){
+        for (int a=0; a<levelLengte; a++){
             voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a, true, false));
             voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 20, a, true, false));
         }
         
         speler = new Voorwerp(VoorwerpType.SPELER, this.spelerX, this.spelerY, true, false);
         voorwerpen.add(speler);
-        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 16, true, false));
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 4, 8, true, false));
+//        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 16, true, false));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 12, 11, true, false));
         
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, true));
-        
-        
-
-        
+//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, true));
     }
     
     public void beweegSpelerLinks(){
@@ -66,7 +62,7 @@ public class Level {
         int doelX = speler.getVoorwerpX() - dx ;
         int doelY = speler.getVoorwerpY();
         
-        if (controleerVerplaatsing(doelX, doelY)){
+        if (controleerVerplaatsingSpeler(doelX, doelY)){
             speler.verplaatsLinks(dx);
             this.spelerX = speler.getVoorwerpX();
             this.spelerY = speler.getVoorwerpY();
@@ -78,7 +74,7 @@ public class Level {
         int doelX = speler.getVoorwerpX() + dx ;
         int doelY = speler.getVoorwerpY();
         
-        if (controleerVerplaatsing(doelX, doelY)){
+        if (controleerVerplaatsingSpeler(doelX, doelY)){
             speler.verplaatsRechts(dx);
             this.spelerX = speler.getVoorwerpX();
             this.spelerY = speler.getVoorwerpY();
@@ -90,7 +86,7 @@ public class Level {
         int doelX = speler.getVoorwerpX();
         int doelY = speler.getVoorwerpY() - dy;
         
-        if (controleerVerplaatsing(doelX, doelY)){
+        if (controleerVerplaatsingSpeler(doelX, doelY)){
             speler.verplaatsBoven(dy);
             this.spelerX = speler.getVoorwerpX();
             this.spelerY = speler.getVoorwerpY();
@@ -102,7 +98,7 @@ public class Level {
         int doelX = speler.getVoorwerpX();
         int doelY = speler.getVoorwerpY() + dy;
         
-        if (controleerVerplaatsing(doelX, doelY)){
+        if (controleerVerplaatsingSpeler(doelX, doelY)){
             speler.verplaatsOnder(dy);
             this.spelerX = speler.getVoorwerpX();
             this.spelerY = speler.getVoorwerpY();
@@ -110,66 +106,160 @@ public class Level {
         
     }
     
-    private boolean controleerVerplaatsing(int doelX, int doelY){
+    private boolean controleerVerplaatsingSpeler(int doelX, int doelY){
         
-        // Grens: linker- en rechterzijde
-        /*if ((doelX < 0) || (doelX>levelBreedte)){
-            return false;
-        }*/
         // Grens: boven- en onderzijde
         if ((doelY < 2) || (doelY>levelLengte-2)){
             return false;
         }
-        // Controle of er al een voorwerp op het doelcoordinaat staat
+        // Controle of er al een voorwerp op het doelcoordinaat van de speler staat
         for (Voorwerp vw: voorwerpen){
-            if (vw.isOp(doelX,doelY)){
+            if( vw.getType() != VoorwerpType.SPELER){
+               if (vw.isOp(speler, doelX,doelY)){
                 
                 
                 if (vw.getType()==VoorwerpType.BRANDSTOF){
                     System.out.println("Speler raakt brandstof");
                     this.brandstof = 1.00;
                     voorwerpen.remove(vw);
-                    // Verwijder voorwerp brandstof
-                    //vw.setDood(true);
-                    
                     return true;
                 }
                 else if (vw.getType()==VoorwerpType.MUUR){
-                    // Beschadiging
                     System.out.println("Speler raakt muur");
-                    this.speler.setTotBeschadigingVW(vw.getBeschadigingAanSpeler());
+                    this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
                     this.beschadiging = this.speler.getTotBeschadigingVW();
-                    
                     return false;
                 }
-                
                 else if (vw.getType()==VoorwerpType.VOERTUIG){
-                     // Beschadiging
                     System.out.println("Speler raakt voertuig");
-                    this.speler.setTotBeschadigingVW(vw.getBeschadigingAanSpeler());
-                   
+                    this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
                     this.beschadiging = this.speler.getTotBeschadigingVW();
-                    // Verplaats tegenligger
                     System.out.println("Totale beschadiging tegenligger: "  + vw.getTotBeschadigingVW());
-                    vw.setTotBeschadigingVW(vw.getBeschadigingAanZichzelf());
-                    
+                    vw.setTotBeschadigingVW(this.speler.getBeschadigingAanAnderen());
                     
                     if (vw.isVijand() && vw.isDood()){
                         // Speler raakt vijand en is dood
                         // Level verhogen
-                        
+                        System.out.println("Vijand verslagen -> Verhoog level");
+                        this.verhoogLevel();
                     }
                     
                     // Berekenen hoe een voertuig wordt geduwd na een botsing
-                    vw.verplaatsBoven(1);
+                    // eerste parameters is het voorwerp dat gaat botsen 
+                    // tweede parameters id het voorwerp dat gebotst wordt
+                    this.botsting(speler,vw);
                     
+                    return false;
+                }
+            }
+ 
+            }
+                    }
+        return true;
+    }
+    
+   
+    /**
+     * Deze methode bepaalt de richting van een voertuig nadat de speler of een ander voertuig hier tegen botst
+     * eerste parameters is de het voorwerp dat gaat botsen (ACTIE)
+     * tweede parameters id het voorwerp dat gebotst wordt  (REACTIE)
+     */
+    private void botsting(Voorwerp actieVW, Voorwerp reactieVW){
+        int dx = 1;
+        int dy = 1;
+        
+        if (actieVW.getVoorwerpY() == reactieVW.getVoorwerpY() ){
+            // Actie voertuig staat op de hoogte als het reactie voertuig
+            if (actieVW.getVoorwerpX() < reactieVW.getVoorwerpX()){
+                //Speler staat links van het voertuig -> verplaatst het voertuig naar rechts
+                
+                if (this.controleerVerplaatsingVoertuig(reactieVW, (reactieVW.getVoorwerpX()+dx), reactieVW.getVoorwerpY())){
+                    reactieVW.verplaatsRechts(dx);
+                }
+                
+            }
+            if (actieVW.getVoorwerpX() > reactieVW.getVoorwerpX()){
+                //Speler staat rechts van het voertuig -> verplaatst het voertuig naar links
+                reactieVW.verplaatsLinks(dx);
+            }
+        }
+        
+        // Speler en voertuig staan op verschillende hoogtes:
+               
+        else if (actieVW.getVoorwerpX() > (reactieVW.getVoorwerpY() + (reactieVW.getLengteVW()-1)) ){
+            // Speler staat helemaal onder het voertuig -> verplaats het voertuig naar boven)
+            reactieVW.verplaatsBoven(dy);
+        }
+        
+        else if (actieVW.getVoorwerpY() > (reactieVW.getVoorwerpY()) ){
+            // Speler staat schuin onder het voertuig
+            if (actieVW.getVoorwerpX() < reactieVW.getVoorwerpX()){
+                //Speler staat links van het voertuig -> verplaatst het voertuig naar rechts en naar boven
+                reactieVW.verplaatsRechts(dx);
+                reactieVW.verplaatsBoven(dy);
+            }
+            if (actieVW.getVoorwerpX() > reactieVW.getVoorwerpX()){
+                //Speler staat rechts van het voertuig -> verplaatst het voertuig naar links en naar boven
+                reactieVW.verplaatsLinks(dx);
+                reactieVW.verplaatsBoven(dy);
+            }
+        }
+        else if ( (actieVW.getVoorwerpY()+ actieVW.getLengteVW() -1) < reactieVW.getVoorwerpY()){
+            reactieVW.verplaatsOnder(dy);
+        }
+        else if (actieVW.getVoorwerpY() < (reactieVW.getVoorwerpY()) ){
+            // Speler staat schuin boven het voertuig
+             if (actieVW.getVoorwerpX() < reactieVW.getVoorwerpX()){
+                //Speler staat links van het voertuig -> verplaatst het voertuig naar rechts en naar onder
+                reactieVW.verplaatsRechts(dx);
+                reactieVW.verplaatsOnder(dy);
+            }
+            if (actieVW.getVoorwerpX() > reactieVW.getVoorwerpX()){
+                //Speler staat rechts van het voertuig -> verplaatst het voertuig naar links en naar onder
+                reactieVW.verplaatsLinks(dx);
+                reactieVW.verplaatsOnder(dy);
+            }
+        }
+        
+    }
+    
+    private boolean controleerVerplaatsingVoertuig(Voorwerp voertuig, int doelX, int doelY){
+        
+         // Controle of er al een voorwerp op het doelcoordinaat van het gebotste voertuig staat
+        for (Voorwerp vw: voorwerpen){
+            if (vw.isOp(this.speler,doelX,doelY)){
+                
+                if (vw.getType()==VoorwerpType.BRANDSTOF){
+                    System.out.println("Gebotste voertuig raakt brandstof");
+                    return true;
+                }
+                else if (vw.getType()==VoorwerpType.MUUR){
+                    System.out.println("Gebotste voertuig raakt muur");
+                    voertuig.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
+                    return false;
+                }
+                else if (vw.getType()==VoorwerpType.VOERTUIG){
+                    System.out.println("Gebotste voertuig raakt ander voertuig");
+                    vw.setTotBeschadigingVW(voertuig.getBeschadigingAanAnderen());
+                    
+                    if (vw.isVijand() && vw.isDood()){
+                        // Speler raakt vijand en is dood
+                        // Level verhogen
+                        System.out.println("Vijand verslagen -> Verhoog level");
+                        this.verhoogLevel();
+                    }
+                    
+                    // Berekenen hoe een voertuig wordt geduwd na een botsing
+                    //this.botsting(voertuig, vw);
+                    //vw.verplaatsRechts(1);
                     return false;
                 }
             }
         }
         return true;
     }
-    
+     
+     
     private void verhoogLevel(){
         if (this.level<5){
             this.level++;
@@ -225,25 +315,7 @@ public class Level {
              // enkel gewone voertuigen en brandstof mogen bewegen (vallen) worden
             if (vw.getType() == VoorwerpType.VOERTUIG){
                 
-                if (vw.isOp(doelX,doelY)){
-                
-                // Beschadiging aan speler/Vijand -> er valt een voertuig op de speler...
-                    if (vw.getType()==VoorwerpType.SPELER){
-                        // Beschadiging
-                        System.out.println("Speler raakt voertuig");
-                        this.speler.setTotBeschadigingVW(vw.getBeschadigingAanSpeler());
-
-                        this.beschadiging = this.speler.getTotBeschadigingVW();
-                        // Verplaats tegenligger
-                        System.out.println("Totale beschadiging tegenligger: "  + vw.getTotBeschadigingVW());
-                        vw.setTotBeschadigingVW(vw.getBeschadigingAanZichzelf());
-
-                        vw.verplaatsBoven(1);
-                    }
-                }
-                else{
-                     vw.verplaatsOnder(1);
-                }
+               
                
             }
             
@@ -253,7 +325,7 @@ public class Level {
         this.totAfstand += this.afstandTick;
         // Brandstof verlagen
         if (this.brandstof>=0){
-             this.brandstof -=0.02;
+             this.brandstof -=0.01;
         }
        
     }
@@ -284,11 +356,5 @@ public class Level {
     public Iterator<Voorwerp> getVoorwerpenLijst()
     {
         return this.voorwerpen.iterator();
-    }
-    
-   
-    
-    
-    
-    
+    }    
 }

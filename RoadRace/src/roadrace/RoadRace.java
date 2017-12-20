@@ -19,12 +19,7 @@ public class RoadRace extends Application {
     
     @Override
     public void start(Stage stage) throws Exception {
-        /*Parent root = FXMLLoader.load(getClass().getResource("FXMLRoadRace.fxml"));
         
-        Scene scene = new Scene(root);
-        
-        stage.setScene(scene);
-        stage.show();*/
         
         Level model = new Level();
         FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLRoadRace.fxml"));
@@ -41,8 +36,18 @@ public class RoadRace extends Application {
         Scene s = new Scene(root);
         
         stage.setScene(s);
+        stage.setTitle("Road Race");
         stage.show();
-            
+        
+        
+        /*FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLStartScherm.fxml"));
+        Parent root = lader.load();
+        
+        FXMLStartController controller = lader.getController();
+        Scene s = new Scene(root);
+        
+        stage.setScene(s);
+        stage.show();*/
     }
 
     /**

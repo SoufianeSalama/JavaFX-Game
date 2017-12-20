@@ -19,8 +19,8 @@ public class Voorwerp {
     
     // BESCHADIGING 
     private double totBeschadigingVW;
-    private double beschadigingAanZichzelf;
-    private double beschadigingAanSpeler;
+    //private double beschadigingAanZichzelf;
+    private double beschadigingAanAnderen;
     
     // DUWBAAR/NEEMBAAR
     private boolean duwbaar, neembaar;
@@ -49,27 +49,27 @@ public class Voorwerp {
     private void setVWParameters(){
         switch (this.type){
             case SPELER:
-                this.beschadigingAanSpeler = 0.0;
-                this.beschadigingAanZichzelf = 0.0;
+                this.beschadigingAanAnderen = 0.2;
+                //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 3;
+                this.lengteVW = 4;
                 this.breedteVW = 2;
                 break;
             
             case VOERTUIG:
-                this.beschadigingAanSpeler = 0.2;
-                this.beschadigingAanZichzelf = 0.3;
+                this.beschadigingAanAnderen = 0.2;
+                //this.beschadigingAanZichzelf = 0.3;
                 this.duwbaar = true;
                 this.neembaar = false;
-                this.lengteVW = 2;
+                this.lengteVW = 5;
                 this.breedteVW = 2;
                 this.beweegt = true;
                 break;
                 
             case BRANDSTOF:
-                this.beschadigingAanSpeler = 0.0;
-                this.beschadigingAanZichzelf = 0.0;
+                this.beschadigingAanAnderen = 0.0;
+                //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = true;
                 this.lengteVW = 2;
@@ -77,11 +77,11 @@ public class Voorwerp {
                 break;
                 
             case MUUR:
-                this.beschadigingAanSpeler = 0.1;
-                this.beschadigingAanZichzelf = 0.0;
+                this.beschadigingAanAnderen = 0.3;
+                //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 1;
+                this.lengteVW = 2;
                 this.breedteVW = 1;
                 break;   
         }
@@ -99,13 +99,13 @@ public class Voorwerp {
         return type;
     }
 
-    public double getBeschadigingAanSpeler() {
-        return beschadigingAanSpeler;
+    public double getBeschadigingAanAnderen() {
+        return beschadigingAanAnderen;
     }
 
-    public double getBeschadigingAanZichzelf() {
-        return beschadigingAanZichzelf;
-    }
+//    public double getBeschadigingAanZichzelf() {
+//        return beschadigingAanZichzelf;
+//    }
 
     public double getTotBeschadigingVW() {
         return totBeschadigingVW;
@@ -167,28 +167,28 @@ public class Voorwerp {
     
     
     
-    
-    public boolean isOp(int doelX, int doelY){
-//        System.out.println("DoelX: "+ doelX);
-//        System.out.println("DoelY: "+ doelY);
-//        
-//        System.out.println(this.type+" Voorwerp X: " + this.voorwerpX + " breedte = " + this.breedteVW );
-//        System.out.println(this.type+" Voorwerp Y: " + this.voorwerpY + " lengte = " + this.lengteVW);
-//        if (this.voorwerpX == doelX ){
-//            if (this.voorwerpY == doelY){
-//                return true;
-//            }
-//        }
-//        return false;
-        
-         if (this.voorwerpX == doelX || this.voorwerpX+(this.breedteVW/2) ==doelX || this.voorwerpX-(this.breedteVW/2) ==doelX ){
-             
-             if (this.voorwerpY == doelY || this.voorwerpY-(this.lengteVW/2) ==doelY || this.voorwerpY+(this.lengteVW/2) ==doelY){
-                return true;
+    /**
+     * 
+     * De methode "isOp()" controlleert of een voorwerp zich bevindt op de doelcoordinaten van de speler of van een gebotst voertuig.
+     * Deze methode wordt voor alle voorwerpen uitgevoerd
+     * @param doelX
+     * @param doelY
+     * @return 
+     */
+    public boolean isOp(Voorwerp actie, int doelX, int doelY){
+
+        if (this.voorwerpX == doelX || (doelX + actie.breedteVW-1 == this.voorwerpX) || (this.voorwerpX + this.breedteVW-1 == doelX ) ){
+
+            if ( ((doelY>=this.voorwerpY) && (doelY<= this.voorwerpY+this.lengteVW-1)) || ( (doelY <= this.voorwerpY) && (doelY + actie.lengteVW - 1>=this.voorwerpY)) ){
+               return true;
             }
-         }
+        }
+
         
-       return false;
+        
+        
+        
+        return false;
     }
     
     

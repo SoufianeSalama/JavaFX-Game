@@ -49,7 +49,7 @@ public class FXMLRoadRaceController {
     }
     
     public void beweegSpeler(KeyEvent e){
-        if (!model.speler.isDood()){
+        //if (!model.speler.isDood()){
             switch (e.getCode()){
                 case LEFT:
                     model.beweegSpelerLinks();
@@ -69,12 +69,12 @@ public class FXMLRoadRaceController {
                     break;
             }
             this.updateViews();
-        }
-        else
-        {
-            System.out.println("Speler is dood"); 
-            // ga naar score scherm
-        }
+//        }
+//        else
+//        {
+//            System.out.println("Speler is dood"); 
+//            // ga naar score scherm
+//        }
         
     }
     
