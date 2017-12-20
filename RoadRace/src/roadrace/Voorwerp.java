@@ -53,16 +53,16 @@ public class Voorwerp {
                 //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 4;
+                this.lengteVW = 2;
                 this.breedteVW = 2;
                 break;
             
             case VOERTUIG:
-                this.beschadigingAanAnderen = 0.2;
+                this.beschadigingAanAnderen = 0.1;
                 //this.beschadigingAanZichzelf = 0.3;
                 this.duwbaar = true;
                 this.neembaar = false;
-                this.lengteVW = 5;
+                this.lengteVW = 2;
                 this.breedteVW = 2;
                 this.beweegt = true;
                 break;
@@ -82,7 +82,7 @@ public class Voorwerp {
                 this.duwbaar = false;
                 this.neembaar = false;
                 this.lengteVW = 2;
-                this.breedteVW = 1;
+                this.breedteVW = 2;
                 break;   
         }
     }
@@ -171,23 +171,20 @@ public class Voorwerp {
      * 
      * De methode "isOp()" controlleert of een voorwerp zich bevindt op de doelcoordinaten van de speler of van een gebotst voertuig.
      * Deze methode wordt voor alle voorwerpen uitgevoerd
+     * 
      * @param doelX
      * @param doelY
      * @return 
      */
     public boolean isOp(Voorwerp actie, int doelX, int doelY){
 
-        if (this.voorwerpX == doelX || (doelX + actie.breedteVW-1 == this.voorwerpX) || (this.voorwerpX + this.breedteVW-1 == doelX ) ){
+        //if (this.voorwerpX == doelX || (doelX + actie.breedteVW-1 == this.voorwerpX) || (this.voorwerpX + this.breedteVW-1 == doelX ) ){
+        if ( ((doelX>=this.voorwerpX) && (doelX<= this.voorwerpX+this.breedteVW-1)) || ( (doelX <= this.voorwerpX) && (doelX + actie.breedteVW - 1>=this.voorwerpX)) ){
 
             if ( ((doelY>=this.voorwerpY) && (doelY<= this.voorwerpY+this.lengteVW-1)) || ( (doelY <= this.voorwerpY) && (doelY + actie.lengteVW - 1>=this.voorwerpY)) ){
                return true;
             }
         }
-
-        
-        
-        
-        
         return false;
     }
     

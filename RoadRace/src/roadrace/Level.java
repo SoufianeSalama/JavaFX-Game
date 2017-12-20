@@ -54,7 +54,9 @@ public class Level {
 //        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 16, true, false));
         voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 12, 11, true, false));
         
-//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, true));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, false));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 15, true, false));
+
     }
     
     public void beweegSpelerLinks(){
@@ -114,150 +116,186 @@ public class Level {
         }
         // Controle of er al een voorwerp op het doelcoordinaat van de speler staat
         for (Voorwerp vw: voorwerpen){
+            
             if( vw.getType() != VoorwerpType.SPELER){
-               if (vw.isOp(speler, doelX,doelY)){
                 
+                if (vw.isOp(speler, doelX,doelY)){
                 
-                if (vw.getType()==VoorwerpType.BRANDSTOF){
-                    System.out.println("Speler raakt brandstof");
-                    this.brandstof = 1.00;
-                    voorwerpen.remove(vw);
-                    return true;
-                }
-                else if (vw.getType()==VoorwerpType.MUUR){
-                    System.out.println("Speler raakt muur");
-                    this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
-                    this.beschadiging = this.speler.getTotBeschadigingVW();
-                    return false;
-                }
-                else if (vw.getType()==VoorwerpType.VOERTUIG){
-                    System.out.println("Speler raakt voertuig");
-                    this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
-                    this.beschadiging = this.speler.getTotBeschadigingVW();
-                    System.out.println("Totale beschadiging tegenligger: "  + vw.getTotBeschadigingVW());
-                    vw.setTotBeschadigingVW(this.speler.getBeschadigingAanAnderen());
-                    
-                    if (vw.isVijand() && vw.isDood()){
-                        // Speler raakt vijand en is dood
-                        // Level verhogen
-                        System.out.println("Vijand verslagen -> Verhoog level");
-                        this.verhoogLevel();
+                    if (vw.getType()==VoorwerpType.BRANDSTOF){
+                        System.out.println("Speler raakt brandstof");
+                        this.brandstof = 1.00;
+                        voorwerpen.remove(vw);
+                        return true;
                     }
-                    
-                    // Berekenen hoe een voertuig wordt geduwd na een botsing
-                    // eerste parameters is het voorwerp dat gaat botsen 
-                    // tweede parameters id het voorwerp dat gebotst wordt
-                    this.botsting(speler,vw);
-                    
-                    return false;
-                }
-            }
- 
-            }
+                    else if (vw.getType()==VoorwerpType.MUUR){
+                        System.out.println("Speler raakt muur");
+                        this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
+                        this.beschadiging = this.speler.getTotBeschadigingVW();
+                        return false;
                     }
+                    else if (vw.getType()==VoorwerpType.VOERTUIG){
+                        System.out.println("Speler raakt voertuig");
+                        this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
+                        this.beschadiging = this.speler.getTotBeschadigingVW();
+                        System.out.println("Totale beschadiging tegenligger: "  + vw.getTotBeschadigingVW());
+                        vw.setTotBeschadigingVW(this.speler.getBeschadigingAanAnderen());
+
+                        if (vw.isVijand() && vw.isDood()){
+                            // Speler raakt vijand en is dood
+                            // Level verhogen
+                            System.out.println("Vijand verslagen -> Verhoog level");
+                            this.verhoogLevel();
+                        }
+
+                        // Berekenen hoe een voertuig wordt geduwd na een botsing
+                        // eerste parameters is het voorwerp dat gaat botsen 
+                        // tweede parameters id het voorwerp dat gebotst wordt
+                        this.botsting(speler,vw);
+
+                        return false;
+                    }
+                }
+            }   
+        }
         return true;
     }
     
+    private boolean contrVerplGebotstVoertuig(Voorwerp reactieVW,int doelX, int doelY){
+        
+        // Controle of er al een voorwerp op het doelcoordinaat van het gebotste voertuig staat
+        for (Voorwerp vw: voorwerpen){
+            
+//            if( vw.getType() != VoorwerpType.SPELER){
+            if( vw != reactieVW){
+    
+                if (vw.isOp(reactieVW, doelX,doelY)){
+                    
+                    if (vw.getType()==VoorwerpType.MUUR){
+                        System.out.println("Gebotste voertuig raakt muur");
+                        reactieVW.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
+                        return false;
+                    }
+                    
+                    if (vw.getType()==VoorwerpType.VOERTUIG){
+                        System.out.println("Gebotste voertuig raakt ander voertuig");
+                        // het botsende voertuig loopt beschading op
+                        reactieVW.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
+                        
+                        // en het gebotste voertuig loopt beschadeging op
+                        vw.setTotBeschadigingVW(reactieVW.getBeschadigingAanAnderen());
+                        
+                        if (vw.isVijand() && vw.isDood()){
+                            // Speler raakt vijand en is dood
+                            // Level verhogen
+                            System.out.println("Vijand verslagen -> Verhoog level");
+                            this.verhoogLevel();
+                        }
+
+                        // Berekenen hoe een voertuig wordt geduwd na een botsing
+                        // eerste parameters is het voorwerp dat gaat botsen 
+                        // tweede parameters id het voorwerp dat gebotst wordt
+                        this.botsting(reactieVW,vw);
+                        return false;
+                        
+                    }
+                    
+                    
+                }
+            }   
+        }
+        return true;
+    }
    
     /**
-     * Deze methode bepaalt de richting van een voertuig nadat de speler of een ander voertuig hier tegen botst
-     * eerste parameters is de het voorwerp dat gaat botsen (ACTIE)
-     * tweede parameters id het voorwerp dat gebotst wordt  (REACTIE)
+     * Deze methode bepaalt de richting van een voertuig nadat de speler of een ander voertuig hier tegenaan botst
+     * eerste parameters is het voorwerp dat gaat botsen (ACTIE)
+     * tweede parameters is het voorwerp dat gebotst wordt  (REACTIE)
      */
     private void botsting(Voorwerp actieVW, Voorwerp reactieVW){
         int dx = 1;
         int dy = 1;
         
+        ////////////////////////////////////////////////////////
+        //  Actie voertuig staat op dezelfde hoogte als het reactie voertuig
+        ////////////////////////////////////////////////////////
         if (actieVW.getVoorwerpY() == reactieVW.getVoorwerpY() ){
-            // Actie voertuig staat op de hoogte als het reactie voertuig
+
             if (actieVW.getVoorwerpX() < reactieVW.getVoorwerpX()){
                 //Speler staat links van het voertuig -> verplaatst het voertuig naar rechts
                 
-                if (this.controleerVerplaatsingVoertuig(reactieVW, (reactieVW.getVoorwerpX()+dx), reactieVW.getVoorwerpY())){
+                if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX()+dx, reactieVW.getVoorwerpY())){
                     reactieVW.verplaatsRechts(dx);
                 }
                 
             }
             if (actieVW.getVoorwerpX() > reactieVW.getVoorwerpX()){
                 //Speler staat rechts van het voertuig -> verplaatst het voertuig naar links
-                reactieVW.verplaatsLinks(dx);
+                
+                if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX()-dx, reactieVW.getVoorwerpY())){
+                    reactieVW.verplaatsLinks(dx);
+                }
             }
         }
         
-        // Speler en voertuig staan op verschillende hoogtes:
-               
-        else if (actieVW.getVoorwerpX() > (reactieVW.getVoorwerpY() + (reactieVW.getLengteVW()-1)) ){
-            // Speler staat helemaal onder het voertuig -> verplaats het voertuig naar boven)
-            reactieVW.verplaatsBoven(dy);
+        ////////////////////////////////////////////////////////
+        //  Actie (botsende) voertuig en reactie (gebotste) voertuig staan op verschillende hoogtes
+        ////////////////////////////////////////////////////////
+        else if (actieVW.getVoorwerpY() > (reactieVW.getVoorwerpY() + (reactieVW.getLengteVW()-1)) ){
+            // Speler staat helemaal onder het voertuig -> verplaats het voertuig naar boven
+            if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX(), reactieVW.getVoorwerpY()-dy)){
+                reactieVW.verplaatsBoven(dy);
+            }
+            
         }
-        
         else if (actieVW.getVoorwerpY() > (reactieVW.getVoorwerpY()) ){
             // Speler staat schuin onder het voertuig
             if (actieVW.getVoorwerpX() < reactieVW.getVoorwerpX()){
                 //Speler staat links van het voertuig -> verplaatst het voertuig naar rechts en naar boven
-                reactieVW.verplaatsRechts(dx);
-                reactieVW.verplaatsBoven(dy);
+                if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX()+dx, reactieVW.getVoorwerpY()-dy)){
+                    reactieVW.verplaatsRechts(dx);
+                    reactieVW.verplaatsBoven(dy);
+                }
+                
             }
             if (actieVW.getVoorwerpX() > reactieVW.getVoorwerpX()){
                 //Speler staat rechts van het voertuig -> verplaatst het voertuig naar links en naar boven
-                reactieVW.verplaatsLinks(dx);
-                reactieVW.verplaatsBoven(dy);
+                if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX()-dx, reactieVW.getVoorwerpY()-dy)){
+                    reactieVW.verplaatsLinks(dx);
+                    reactieVW.verplaatsBoven(dy);
+                }
+               
             }
         }
         else if ( (actieVW.getVoorwerpY()+ actieVW.getLengteVW() -1) < reactieVW.getVoorwerpY()){
-            reactieVW.verplaatsOnder(dy);
+            // Speler staat helemaal boven het voertuig -> verplaats het voertuig naar onder
+            if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX(), reactieVW.getVoorwerpY()+dy)){
+                reactieVW.verplaatsOnder(dy);
+            }
         }
         else if (actieVW.getVoorwerpY() < (reactieVW.getVoorwerpY()) ){
             // Speler staat schuin boven het voertuig
              if (actieVW.getVoorwerpX() < reactieVW.getVoorwerpX()){
                 //Speler staat links van het voertuig -> verplaatst het voertuig naar rechts en naar onder
-                reactieVW.verplaatsRechts(dx);
-                reactieVW.verplaatsOnder(dy);
+                if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX()+dx, reactieVW.getVoorwerpY()+dy)){
+                    reactieVW.verplaatsRechts(dx);
+                    reactieVW.verplaatsOnder(dy);
+                }
+
+                
             }
             if (actieVW.getVoorwerpX() > reactieVW.getVoorwerpX()){
                 //Speler staat rechts van het voertuig -> verplaatst het voertuig naar links en naar onder
-                reactieVW.verplaatsLinks(dx);
-                reactieVW.verplaatsOnder(dy);
+                if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX()-dx, reactieVW.getVoorwerpY()+dy)){
+                    reactieVW.verplaatsLinks(dx);
+                    reactieVW.verplaatsOnder(dy);
+                }
+                
             }
         }
         
     }
     
-    private boolean controleerVerplaatsingVoertuig(Voorwerp voertuig, int doelX, int doelY){
-        
-         // Controle of er al een voorwerp op het doelcoordinaat van het gebotste voertuig staat
-        for (Voorwerp vw: voorwerpen){
-            if (vw.isOp(this.speler,doelX,doelY)){
-                
-                if (vw.getType()==VoorwerpType.BRANDSTOF){
-                    System.out.println("Gebotste voertuig raakt brandstof");
-                    return true;
-                }
-                else if (vw.getType()==VoorwerpType.MUUR){
-                    System.out.println("Gebotste voertuig raakt muur");
-                    voertuig.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
-                    return false;
-                }
-                else if (vw.getType()==VoorwerpType.VOERTUIG){
-                    System.out.println("Gebotste voertuig raakt ander voertuig");
-                    vw.setTotBeschadigingVW(voertuig.getBeschadigingAanAnderen());
-                    
-                    if (vw.isVijand() && vw.isDood()){
-                        // Speler raakt vijand en is dood
-                        // Level verhogen
-                        System.out.println("Vijand verslagen -> Verhoog level");
-                        this.verhoogLevel();
-                    }
-                    
-                    // Berekenen hoe een voertuig wordt geduwd na een botsing
-                    //this.botsting(voertuig, vw);
-                    //vw.verplaatsRechts(1);
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
+   
      
      
     private void verhoogLevel(){
@@ -305,21 +343,6 @@ public class Level {
      // Beweging thread (Voorwerpen vallen)
     public void beweegVoorwerpen(){
         System.out.println("Beweeg Voorwerpen");
-        int doelX, doelY;
-        
-        for (Voorwerp vw: voorwerpen){
-            doelX = vw.getVoorwerpX();
-            doelY = vw.getVoorwerpY()+1;
-            
-            
-             // enkel gewone voertuigen en brandstof mogen bewegen (vallen) worden
-            if (vw.getType() == VoorwerpType.VOERTUIG){
-                
-               
-               
-            }
-            
-        }
         
         // Afstand verhogen
         this.totAfstand += this.afstandTick;
