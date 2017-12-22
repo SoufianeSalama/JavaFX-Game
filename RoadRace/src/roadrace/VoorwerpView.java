@@ -24,7 +24,6 @@ public class VoorwerpView extends Group{
     private int VERGROTING;
     
     private Rectangle vwIndicator;
-    private Circle vijandIndicator;
 
     public VoorwerpView(Voorwerp voorwerp) {
         this.vw = voorwerp;
@@ -35,9 +34,8 @@ public class VoorwerpView extends Group{
         switch (this.vw.getType()){
             case SPELER:
                 ImageView ivSpeler = this.tekenSpeler();
-                vwIndicator = this.tekenVoorwerpIndicator();
-               
-                paneel.getChildren().addAll(ivSpeler, vwIndicator);
+                //vwIndicator = this.tekenVoorwerpIndicator();
+                paneel.getChildren().addAll(ivSpeler);
                 break;
                 
             case MUUR:
@@ -46,14 +44,25 @@ public class VoorwerpView extends Group{
                 break;
             case BRANDSTOF:
                 ImageView ivBrandstof = this.tekenBrandstof();
-                Rectangle test = this.tekenMuur();
-                paneel.getChildren().add(test);
+                paneel.getChildren().add(ivBrandstof);
                 break;
             case VOERTUIG:
-                Rectangle voertuig  = tekenVoertuig();
+                ImageView voertuig = null;
+                switch (this.vw.getVoertuigType()){
+                    case AUTO:
+                        voertuig = tekenVoertuigAuto();
+                        break;
+                    case TRUCK:
+                        voertuig = tekenVoertuigTruck();
+                        break;
+                    case MOTOR:
+                        voertuig = tekenVoertuigMotor();
+                        break;
+                }
+                
                 if (voorwerp.isVijand()){
-                    vijandIndicator = this.tekenVijandIndicator();
-                    paneel.getChildren().addAll(voertuig,vijandIndicator);
+                    vwIndicator = this.tekenVoorwerpIndicator();
+                    paneel.getChildren().addAll(voertuig,vwIndicator);
                 }
                 else{
                     paneel.getChildren().add(voertuig);
@@ -101,28 +110,51 @@ public class VoorwerpView extends Group{
         return muurView;
     }
     
-    private Rectangle tekenVoertuig(){
+    private ImageView tekenVoertuigAuto(){
         Rectangle tegenliggerView = new Rectangle(0,0,vw.getBreedteVW() * this.VERGROTING, vw.getLengteVW() * this.VERGROTING);
         tegenliggerView.setFill(Color.WHITE);   
-        return tegenliggerView;
-    }
-    
-    private Circle tekenVijandIndicator(){
-        Circle ic = new Circle(vw.getBreedteVW()*this.VERGROTING/2, vw.getBreedteVW()*this.VERGROTING/2, vw.getBreedteVW()*this.VERGROTING);
-        ic.setStrokeType(StrokeType.INSIDE);
-        ic.setStrokeWidth(3);
-        ic.setStroke(Color.LIGHTGREEN);
-        ic.setFill(null);
         
-        return ic;
+        Image image = new Image(getClass().getResourceAsStream("/roadrace.img/voertuig.png")); // http://www.freeiconspng.com/img/34874
+        ImageView iv = new ImageView(image);
+        //iv.setRotate(90);
+        iv.setFitHeight(vw.getLengteVW()*this.VERGROTING);
+        iv.setFitWidth(vw.getBreedteVW()*this.VERGROTING);
+        
+        return iv;
     }
     
+    private ImageView tekenVoertuigMotor(){
+        Rectangle tegenliggerView = new Rectangle(0,0,vw.getBreedteVW() * this.VERGROTING, vw.getLengteVW() * this.VERGROTING);
+        tegenliggerView.setFill(Color.WHITE);   
+        
+        Image image = new Image(getClass().getResourceAsStream("/roadrace.img/motor.png")); // https://openclipart.org/detail/203366/racing-bike-top-down-for-games
+        ImageView iv = new ImageView(image);
+        //iv.setRotate(90);
+        iv.setFitHeight(vw.getLengteVW()*this.VERGROTING);
+        iv.setFitWidth(vw.getBreedteVW()*this.VERGROTING);
+        
+        return iv;
+    }
     
+    private ImageView tekenVoertuigTruck(){
+        Rectangle tegenliggerView = new Rectangle(0,0,vw.getBreedteVW() * this.VERGROTING, vw.getLengteVW() * this.VERGROTING);
+        tegenliggerView.setFill(Color.WHITE);   
+        
+        Image image = new Image(getClass().getResourceAsStream("/roadrace.img/truck.png")); // http://www.freeiconspng.com/img/34874
+        ImageView iv = new ImageView(image);
+        //iv.setRotate(90);
+        iv.setFitHeight(vw.getLengteVW()*this.VERGROTING);
+        iv.setFitWidth(vw.getBreedteVW()*this.VERGROTING);
+        
+        return iv;
+    }
+    
+  
     public void update(){
         this.paneel.setTranslateX(this.vw.getVoorwerpX() * this.VERGROTING);
         this.paneel.setTranslateY(this.vw.getVoorwerpY() * this.VERGROTING);;
         
-        if (this.vw.getType() == VoorwerpType.SPELER){
+        if (this.vw.getType() == VoorwerpType.VOERTUIG && this.vw.isVijand()){
              if (vw.getTotBeschadigingVW() >=0.00 && vw.getTotBeschadigingVW() <=0.33){
                     this.vwIndicator.setStroke(Color.GREEN);
                 }
@@ -133,14 +165,13 @@ public class VoorwerpView extends Group{
                     this.vwIndicator.setStroke(Color.RED);
                 }
         }
-        if (this.vw.getType() == VoorwerpType.VOERTUIG && this.vw.isVijand()){
-            if (this.vw.isDood()){
-                this.vijandIndicator.setStroke(Color.DARKRED);
-            }
+        
+        if (this.vw.getType() == VoorwerpType.BRANDSTOF && this.vw.isDood()){
+            deleteVW();
         }
     }
     
-    public void deleteVW(){
+    private void deleteVW(){
         getChildren().remove(this.vw);
     }
     

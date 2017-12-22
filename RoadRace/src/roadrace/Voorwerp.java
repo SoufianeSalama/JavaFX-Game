@@ -31,18 +31,35 @@ public class Voorwerp {
     // BEWEGING (VALT)
     private boolean beweegt = false;
     
+    // VERSCHILLENDE VOERTUIGEN
+    private VoertuigType voertuigType;
+    
     
 
-    public Voorwerp(VoorwerpType type, int x, int y, boolean richting, boolean vijand) {
+    public Voorwerp(VoorwerpType type, int x, int y) {
         this.type = type;
         this.voorwerpX = x;
         this.voorwerpY = y;
-        this.richting = richting;
         this.vijand = vijand;
         
         this.dood = false;
         this.totBeschadigingVW = 0.00;
         
+        this.voertuigType = null;
+        
+        this.setVWParameters();
+    }
+    
+    public Voorwerp(VoorwerpType type, int x, int y, VoertuigType vt, boolean vijand) {
+        this.type = type;
+        this.voorwerpX = x;
+        this.voorwerpY = y;
+        this.vijand = vijand;
+        
+        this.dood = false;
+        this.totBeschadigingVW = 0.00;
+        
+        this.voertuigType = vt;
         this.setVWParameters();
     }
     
@@ -53,17 +70,33 @@ public class Voorwerp {
                 //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 2;
-                this.breedteVW = 2;
+                this.lengteVW = 4;
+                this.breedteVW = 3;
                 break;
             
             case VOERTUIG:
-                this.beschadigingAanAnderen = 0.1;
-                //this.beschadigingAanZichzelf = 0.3;
-                this.duwbaar = true;
+                
+                switch (this.voertuigType){
+                    case AUTO:
+                        this.beschadigingAanAnderen = 0.1;
+                        this.lengteVW = 4;
+                        this.breedteVW = 3;
+                        break;
+                    
+                    case TRUCK:
+                        this.beschadigingAanAnderen = 0.3;
+                        this.lengteVW = 10;
+                        this.breedteVW = 4;
+                        break;
+                        
+                    case MOTOR:
+                        this.beschadigingAanAnderen = 0.05;
+                        this.lengteVW = 4;
+                        this.breedteVW = 2;
+                        break;                        
+                }
                 this.neembaar = false;
-                this.lengteVW = 2;
-                this.breedteVW = 2;
+                this.duwbaar = true;
                 this.beweegt = true;
                 break;
                 
@@ -77,12 +110,12 @@ public class Voorwerp {
                 break;
                 
             case MUUR:
-                this.beschadigingAanAnderen = 0.3;
+                this.beschadigingAanAnderen = 0.15;
                 //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
-                this.lengteVW = 2;
-                this.breedteVW = 2;
+                this.lengteVW = 1;
+                this.breedteVW = 1;
                 break;   
         }
     }
@@ -99,6 +132,10 @@ public class Voorwerp {
         return type;
     }
 
+    public VoertuigType getVoertuigType() {
+        return voertuigType;
+    }
+    
     public double getBeschadigingAanAnderen() {
         return beschadigingAanAnderen;
     }
@@ -147,6 +184,11 @@ public class Voorwerp {
             this.dood = true;
         }
     }
+
+    public void setVijand(boolean vijand) {
+        this.vijand = vijand;
+    }
+    
     
     
     public void verplaatsLinks(int dx){

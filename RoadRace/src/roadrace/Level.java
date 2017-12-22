@@ -5,8 +5,12 @@
  */
 package roadrace;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 
 /**
  *
@@ -14,8 +18,8 @@ import java.util.Iterator;
  */
 public class Level {
     
-    private final static int levelBreedte = 23;
-    private final static int levelLengte = 19;
+    private final static int levelBreedte = 24;
+    private final static int levelLengte = 20;
     
     private ArrayList<Voorwerp> voorwerpen;
     
@@ -28,6 +32,10 @@ public class Level {
     
     private int snelheidBeweging, afstandTick;
     
+    private Random random;
+    
+    private Media media;
+    private MediaPlayer mediaplayer;
             
     public Level() {
         init();
@@ -36,27 +44,25 @@ public class Level {
     public void init(){
         this.level = 1;
         this.setLevelParam();
+        random = new Random();
         
-        this.spelerX = 8;
-        this.spelerY = 16;
-        
+        this.spelerX = 9;
+        this.spelerY = 15;
         
         voorwerpen = new ArrayList<>();
         
         // Muur opbouwen
-//        for (int a=0; a<levelLengte; a++){
-//            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a, true, false));
-//            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 20, a, true, false));
-//        }
-        
-        speler = new Voorwerp(VoorwerpType.SPELER, this.spelerX, this.spelerY, true, false);
-        voorwerpen.add(speler);
-        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 0, true, false));
-//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 12, 11, true, false));
-        
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 10, true, false));
-//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 10, 15, true, false));
+        for (int a=0; a<levelLengte; a++){
+            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a));
+            voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 21, a));
+        }
+        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 4));     
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 13, 10, VoertuigType.MOTOR, false));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 6, 4, VoertuigType.AUTO, true));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 5, 10, VoertuigType.TRUCK, false));
 
+        speler = new Voorwerp(VoorwerpType.SPELER, this.spelerX, this.spelerY);
+        voorwerpen.add(speler);
     }
     
     public void beweegSpelerLinks(){
@@ -111,7 +117,7 @@ public class Level {
     private boolean controleerVerplaatsingSpeler(int doelX, int doelY){
         
         // Grens: boven- en onderzijde
-        if ((doelY < 2) || (doelY>levelLengte-2)){
+        if ((doelY < 2) || (doelY+this.speler.getLengteVW()-1>levelLengte-2)){
             return false;
         }
         // Controle of er al een voorwerp op het doelcoordinaat van de speler staat
@@ -124,13 +130,20 @@ public class Level {
                     if (vw.getType()==VoorwerpType.BRANDSTOF){
                         System.out.println("Speler raakt brandstof");
                         this.brandstof = 1.00;
-                        //voorwerpen.remove(vw);
+                        
+                        startBrandstofGeluid();
+                        
+                        vw.setDood(true);
+                        voorwerpen.remove(vw);
                         return true;
                     }
                     else if (vw.getType()==VoorwerpType.MUUR){
                         System.out.println("Speler raakt muur");
                         this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
                         this.beschadiging = this.speler.getTotBeschadigingVW();
+                        
+                        startBotsGeluid();
+                        
                         return false;
                     }
                     else if (vw.getType()==VoorwerpType.VOERTUIG){
@@ -139,12 +152,15 @@ public class Level {
                         this.beschadiging = this.speler.getTotBeschadigingVW();
                         System.out.println("Totale beschadiging tegenligger: "  + vw.getTotBeschadigingVW());
                         vw.setTotBeschadigingVW(this.speler.getBeschadigingAanAnderen());
-
+                        
+                        startBotsGeluid();
+                        
                         if (vw.isVijand() && vw.isDood()){
                             // Speler raakt vijand en is dood
                             // Level verhogen
                             System.out.println("Vijand verslagen -> Verhoog level");
                             this.verhoogLevel();
+                            vw.setVijand(false);
                         }
 
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
@@ -188,7 +204,9 @@ public class Level {
                             // Speler raakt vijand en is dood
                             // Level verhogen
                             System.out.println("Vijand verslagen -> Verhoog level");
+                            
                             this.verhoogLevel();
+                            vw.setVijand(false);
                         }
 
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
@@ -365,7 +383,7 @@ public class Level {
                     if (vw.getType()==VoorwerpType.BRANDSTOF){
                         // Brandstof opgepakt
                         this.brandstof=1;
-                        //this.voorwerpen.remove(vw);
+                        this.voorwerpen.remove(vw);
                         
                     }
                     else if (vw.getType()==VoorwerpType.VOERTUIG){
@@ -375,11 +393,14 @@ public class Level {
 
                         vw.setTotBeschadigingVW(this.speler.getBeschadigingAanAnderen());
 
+                        startBotsGeluid();
+                                
                         if (vw.isVijand() && vw.isDood()){
                             // Speler raakt vijand en is dood
                             // Level verhogen
                             System.out.println("Vijand verslagen -> Verhoog level");
                             this.verhoogLevel();
+                            vw.setVijand(false);
                         }
 
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
@@ -407,10 +428,54 @@ public class Level {
         this.totAfstand += this.afstandTick;
         // Brandstof verlagen
         if (this.brandstof>=0){
-             this.brandstof -=0.01;
+             this.brandstof -=0.05;
         }
-       
+        else{
+            this.speler.setDood(true);
+        }
+        nieuweVoorwerpen();
     }
+    
+    private void nieuweVoorwerpen(){
+        // nieuw voorwerp tonen
+        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 0, 4));
+        System.out.println(voorwerpen.size());
+//        int randomVoorwerp = random.nextInt(20);
+//        int randomVoorwerpX;
+//        System.out.println("Random voorwerp: " + randomVoorwerp);
+//        switch (randomVoorwerp){
+//            
+//            case 1:
+//                randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
+//                voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 0, 4, true, false));
+//                break;
+//            case 5:
+//                randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
+//                voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 0, randomVoorwerpX, true, false));
+//                break;
+//               
+//        };
+    }
+
+    private void nieuweTarget(){
+        int randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
+        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, -2, randomVoorwerpX));
+    }
+    
+    private void startBotsGeluid(){
+        String geluid = "src/roadrace/sound/botsing.mp3";
+        media = new Media(new File(geluid).toURI().toString());
+        mediaplayer = new MediaPlayer(media);
+        mediaplayer.play();
+    }
+    private void startBrandstofGeluid(){
+        String geluid = "src/roadrace/sound/brandstof.mp3";
+        media = new Media(new File(geluid).toURI().toString());
+        mediaplayer = new MediaPlayer(media);
+        mediaplayer.play();
+    }
+    
+    
     
     
     // GETTERS
@@ -438,5 +503,7 @@ public class Level {
     public Iterator<Voorwerp> getVoorwerpenLijst()
     {
         return this.voorwerpen.iterator();
-    }    
+    }  
+    
+    
 }
