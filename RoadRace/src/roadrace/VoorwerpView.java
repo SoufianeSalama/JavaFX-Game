@@ -111,48 +111,34 @@ public class VoorwerpView extends Group{
     }
     
     private ImageView tekenVoertuigAuto(){
-        Rectangle tegenliggerView = new Rectangle(0,0,vw.getBreedteVW() * this.VERGROTING, vw.getLengteVW() * this.VERGROTING);
-        tegenliggerView.setFill(Color.WHITE);   
         
         Image image = new Image(getClass().getResourceAsStream("/roadrace.img/voertuig.png")); // http://www.freeiconspng.com/img/34874
         ImageView iv = new ImageView(image);
-        //iv.setRotate(90);
         iv.setFitHeight(vw.getLengteVW()*this.VERGROTING);
         iv.setFitWidth(vw.getBreedteVW()*this.VERGROTING);
-        
         return iv;
     }
     
     private ImageView tekenVoertuigMotor(){
-        Rectangle tegenliggerView = new Rectangle(0,0,vw.getBreedteVW() * this.VERGROTING, vw.getLengteVW() * this.VERGROTING);
-        tegenliggerView.setFill(Color.WHITE);   
-        
         Image image = new Image(getClass().getResourceAsStream("/roadrace.img/motor.png")); // https://openclipart.org/detail/203366/racing-bike-top-down-for-games
         ImageView iv = new ImageView(image);
-        //iv.setRotate(90);
         iv.setFitHeight(vw.getLengteVW()*this.VERGROTING);
         iv.setFitWidth(vw.getBreedteVW()*this.VERGROTING);
-        
         return iv;
     }
     
     private ImageView tekenVoertuigTruck(){
-        Rectangle tegenliggerView = new Rectangle(0,0,vw.getBreedteVW() * this.VERGROTING, vw.getLengteVW() * this.VERGROTING);
-        tegenliggerView.setFill(Color.WHITE);   
-        
         Image image = new Image(getClass().getResourceAsStream("/roadrace.img/truck.png")); // http://www.freeiconspng.com/img/34874
         ImageView iv = new ImageView(image);
-        //iv.setRotate(90);
         iv.setFitHeight(vw.getLengteVW()*this.VERGROTING);
         iv.setFitWidth(vw.getBreedteVW()*this.VERGROTING);
-        
         return iv;
     }
     
   
     public void update(){
         this.paneel.setTranslateX(this.vw.getVoorwerpX() * this.VERGROTING);
-        this.paneel.setTranslateY(this.vw.getVoorwerpY() * this.VERGROTING);;
+        this.paneel.setTranslateY(this.vw.getVoorwerpY() * this.VERGROTING);
         
         if (this.vw.getType() == VoorwerpType.VOERTUIG && this.vw.isVijand()){
              if (vw.getTotBeschadigingVW() >=0.00 && vw.getTotBeschadigingVW() <=0.33){
@@ -173,6 +159,10 @@ public class VoorwerpView extends Group{
     
     private void deleteVW(){
         getChildren().remove(this.vw);
+    }
+    
+    public Voorwerp getVoorwerp(){
+        return this.vw;
     }
     
     

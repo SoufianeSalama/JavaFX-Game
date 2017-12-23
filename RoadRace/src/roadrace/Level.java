@@ -57,9 +57,9 @@ public class Level {
             voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 21, a));
         }
         voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 4, 4));     
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 13, 10, VoertuigType.MOTOR, false));
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 6, 4, VoertuigType.AUTO, true));
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 5, 10, VoertuigType.TRUCK, false));
+//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 13, 10, VoertuigType.MOTOR, false));
+//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 6, 4, VoertuigType.AUTO, true));
+//        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 5, 10, VoertuigType.TRUCK, false));
 
         speler = new Voorwerp(VoorwerpType.SPELER, this.spelerX, this.spelerY);
         voorwerpen.add(speler);
@@ -374,7 +374,14 @@ public class Level {
                 if (!speler.isOp(vw, doelX,doelY)){
                     // Speler bevindt zich NIET onder een vallend voorwerp
                     if (vw.getType()==VoorwerpType.BRANDSTOF || vw.getType()==VoorwerpType.VOERTUIG){
-                         vw.verplaatsOnder(dy);
+                         
+                         
+                         if (vw.getVoorwerpY()>=this.levelLengte-1){
+                             this.voorwerpen.remove(vw);
+                         }
+                         else{
+                             vw.verplaatsOnder(dy);
+                         }
                     }
                 }
                 
@@ -384,6 +391,8 @@ public class Level {
                         // Brandstof opgepakt
                         this.brandstof=1;
                         this.voorwerpen.remove(vw);
+                        // Geluid
+                        startBrandstofGeluid();
                         
                     }
                     else if (vw.getType()==VoorwerpType.VOERTUIG){
@@ -414,20 +423,13 @@ public class Level {
                 
                 
             }
-                
 
-//            if (vw.getType()==VoorwerpType.VOERTUIG && !vw.isVijand()){
-//               vw.verplaatsOnder(dy);
-//            }
-                    
-                   
-             
         }
         
         // Afstand verhogen
         this.totAfstand += this.afstandTick;
         // Brandstof verlagen
-        if (this.brandstof>=0){
+        if (this.brandstof>0){
              this.brandstof -=0.05;
         }
         else{
@@ -438,7 +440,7 @@ public class Level {
     
     private void nieuweVoorwerpen(){
         // nieuw voorwerp tonen
-        voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, 0, 4));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, 0, 4,VoertuigType.AUTO, false));
         System.out.println(voorwerpen.size());
 //        int randomVoorwerp = random.nextInt(20);
 //        int randomVoorwerpX;
@@ -462,6 +464,8 @@ public class Level {
         voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, -2, randomVoorwerpX));
     }
     
+    
+    // AUDIO
     private void startBotsGeluid(){
         String geluid = "src/roadrace/sound/botsing.mp3";
         media = new Media(new File(geluid).toURI().toString());
@@ -490,6 +494,10 @@ public class Level {
 
     public int getSnelheid() {
         return snelheid;
+    }
+    
+    public boolean isDood(){
+        return this.speler.isDood();
     }
 
     public int getLevel() {

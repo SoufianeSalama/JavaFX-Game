@@ -2,11 +2,17 @@ package roadrace;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Stage;
+import javafx.util.Duration;
 
 public class FXMLRoadRaceController {
     
@@ -30,6 +36,9 @@ public class FXMLRoadRaceController {
 
     @FXML
     private Label level;
+    
+    private Stage mainStage;
+    private Scene resultScene;
 
     @FXML
     void initialize() {
@@ -49,7 +58,7 @@ public class FXMLRoadRaceController {
     }
     
     public void beweegSpeler(KeyEvent e){
-        //if (!model.speler.isDood()){
+        if (!model.speler.isDood()){
             switch (e.getCode()){
                 case LEFT:
                     model.beweegSpelerLinks();
@@ -69,12 +78,12 @@ public class FXMLRoadRaceController {
                     break;
             }
             this.updateViews();
-//        }
-//        else
-//        {
-//            System.out.println("Speler is dood"); 
-//            // ga naar score scherm
-//        }
+        }
+        else
+        {
+            System.out.println("Speler is dood"); 
+            startResultaat();
+        }
         
     }
     
@@ -87,6 +96,35 @@ public class FXMLRoadRaceController {
         snelheid.setText(Integer.toString(model.getSnelheid()));
         afstand.setText(Integer.toString(model.getTotAfstand()));
         
+    }
+    
+    public void setMainStage(Stage s){
+        this.mainStage = s;
+    }
+   
+    private void startResultaat(){
+        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLStartScherm.fxml"));
+        
+        try{
+            Parent root = lader.load();
+            
+            // Fade in/out
+            FadeTransition ft = new FadeTransition(Duration.millis(3000), root);
+            ft.setFromValue(0);
+            ft.setToValue(1);
+            ft.play();
+            
+            FXMLStartController controller = lader.getController();
+            controller.setEinde(model.isDood(),model.getLevel(), model.getTotAfstand());
+            
+            resultScene = new Scene(root);
+            mainStage.setScene(resultScene);
+            mainStage.show();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+            System.out.println("roadrace.FXMLRoadRaceController.startResultaat()");
+        }
     }
     
     

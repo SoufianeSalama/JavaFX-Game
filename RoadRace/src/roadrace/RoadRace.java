@@ -5,11 +5,13 @@
  */
 package roadrace;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 /**
  *
@@ -18,36 +20,38 @@ import javafx.stage.Stage;
 public class RoadRace extends Application {
     
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage mainStage) throws Exception {
         
         
-        Level model = new Level();
-        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLRoadRace.fxml"));
-        Parent root = lader.load();
-        
-        FXMLRoadRaceController controller = lader.getController();
-        controller.setModel(model);
-        
-        Beweging b = new Beweging(model, controller);
-        Thread t = new Thread(b);
-        t.setDaemon(true);
+//        Level model = new Level();
+//        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLRoadRace.fxml"));
+//        Parent root = lader.load();
+//        
+//        FXMLRoadRaceController controller = lader.getController();
+//        controller.setModel(model);
+//        
+//        Beweging b = new Beweging(model, controller);
+//        Thread t = new Thread(b);
+//        t.setDaemon(true);
 //        t.start();
+//        
+//        Scene s = new Scene(root);
+//        
+//        stage.setScene(s);
+//        stage.setTitle("Road Race");
+//        stage.show();
         
-        Scene s = new Scene(root);
         
-        stage.setScene(s);
-        stage.setTitle("Road Race");
-        stage.show();
-        
-        
-        /*FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLStartScherm.fxml"));
+        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLStartScherm.fxml"));
         Parent root = lader.load();
-        
+                
         FXMLStartController controller = lader.getController();
-        Scene s = new Scene(root);
+        Scene resultScene = new Scene(root);
+        controller.setStage(mainStage);
         
-        stage.setScene(s);
-        stage.show();*/
+        mainStage.setScene(resultScene);
+        mainStage.setTitle("Road Race");
+        mainStage.show();
     }
 
     /**

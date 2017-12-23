@@ -68,21 +68,43 @@ public class LevelView extends Region{
         }
     }
     
+    /**
+     * 1e reden: Tijdens het spel worden er voorwerpen verwijdererd uit de voorwerpenlijst, bijvoorbeeld nadat de speler een brandstof opneemt.
+     * Het is dan zo dat een het voorwerpview van dit voorwerp ook verwijderd moet worden.
+     * 
+     * 2de reden: Tijdens het spel worden er ook d.m.v. een thread nieuwe voorwerpen toegevoegd, dus hiervan moeten er nog views aangemaakt worden.
+     * 
+     */
     private void test(){
-       Iterator<Voorwerp> voorwerpenLijst = model.getVoorwerpenLijst();
-        
+        Iterator<Voorwerp> voorwerpenLijst = model.getVoorwerpenLijst();
+        boolean resultaat = false;
         while (voorwerpenLijst.hasNext()){
+            
             Voorwerp vw = voorwerpenLijst.next();
-            
-            
-            if (vwViews.contains(new VoorwerpView(vw))){
-                System.out.println("Voorwerp: " + vw.getType() + " staat al in de VoorwerpenViews lijst");
+            if (this.controleer(vw)){
+                // Voorwerp heeft een view
             }
-//            else{
-//                vwViews.add(new VoorwerpView(vw));
-//            }
+            else
+            {
+                // Voorwerp heeft geen view
+                vwViews.add(new VoorwerpView(vw));
+            }
+            
+                     
         }
         
+       
+    }
+    
+    private boolean controleer(Voorwerp vw){
+        for (VoorwerpView vww: vwViews){
+                if (vww.getVoorwerp()==vw){
+                   return true;
+                   
+                }
+                                
+        }
+        return false;
     }
     
     
