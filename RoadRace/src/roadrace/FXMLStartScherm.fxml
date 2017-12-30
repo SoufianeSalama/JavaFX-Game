@@ -8,14 +8,15 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="600.0" style="-fx-background-color: AQUA;" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="roadrace.FXMLStartController">
+<AnchorPane id="AnchorPane" prefHeight="600.0" prefWidth="600.0" style="-fx-background-image: url(&quot;roadrace.img/achtergrond.png&quot;);" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="roadrace.FXMLStartController">
    <children>
       <Button fx:id="btnSpeel" contentDisplay="TOP" defaultButton="true" layoutX="86.0" layoutY="361.0" mnemonicParsing="false" prefHeight="152.0" prefWidth="428.0" text="START" textAlignment="CENTER">
          <font>
             <Font size="48.0" />
-         </font></Button>
+         </font>
+      </Button>
       <Label layoutX="7.0" layoutY="576.0" text="Soufiane Salama__Schakel IIW__2017-2018" />
-      <TextArea fx:id="txtScore" cacheShape="false" editable="false" layoutX="131.0" layoutY="133.0" opacity="0.54" prefHeight="134.0" prefWidth="338.0" style="text-allign: center;;" text="Uitleg / Score" wrapText="true">
+      <TextArea fx:id="txtScore" cacheShape="false" editable="false" layoutX="131.0" layoutY="133.0" prefHeight="134.0" prefWidth="338.0" style="text-allign: center;;" text="Uitleg / Score" wrapText="true">
          <effect>
             <ColorAdjust />
          </effect>

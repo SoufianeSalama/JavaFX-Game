@@ -22,6 +22,7 @@ public class LevelView extends Region{
     public final static int VERGROTING = 25;
     private Level model;
     private ArrayList<VoorwerpView> vwViews;
+    private Iterator<Voorwerp> voorwerpenLijst;
     
     
     public LevelView(Level model) {
@@ -62,50 +63,94 @@ public class LevelView extends Region{
     }
     
     public void updateVWViews(){
-        test();
+        checkVoorwerpenEnViews();
         for (VoorwerpView vww : vwViews){
             vww.update();
         }
     }
     
+    private void checkVoorwerpenEnViews(){
+       voorwerpenLijst = model.getVoorwerpenLijst();
+       
+       if (model.getAantalVoorwerpen()>this.vwViews.size()){
+           // Er bestaan voorwerpen waarvoor er nog geen views zijn
+           // deze voorwerpen zoeken en aanmaken
+           maakView();
+       }
+       else if(model.getAantalVoorwerpen()<this.vwViews.size()){
+           // Er zijn bestaan nog views van voorwerpen, nadat deze voorwerpen verwijderd zijn
+           // deze voorwerpenviews zoeken en verwijdenen
+           verwijderView();
+       }
+       
+    }
+    
     /**
-     * 1e reden: Tijdens het spel worden er voorwerpen verwijdererd uit de voorwerpenlijst, bijvoorbeeld nadat de speler een brandstof opneemt.
-     * Het is dan zo dat een het voorwerpview van dit voorwerp ook verwijderd moet worden.
-     * 
-     * 2de reden: Tijdens het spel worden er ook d.m.v. een thread nieuwe voorwerpen toegevoegd, dus hiervan moeten er nog views aangemaakt worden.
+     * Tijdens het spel worden er d.m.v. een thread nieuwe voorwerpen toegevoegd, dus hiervan moeten er nog views aangemaakt worden.
      * 
      */
-    private void test(){
-        Iterator<Voorwerp> voorwerpenLijst = model.getVoorwerpenLijst();
+    private void maakView(){
+        System.out.println("Voorwerpviews heeft :" + vwViews.size());
+                
+        
         boolean resultaat = false;
         while (voorwerpenLijst.hasNext()){
             
             Voorwerp vw = voorwerpenLijst.next();
-            if (this.controleer(vw)){
-                // Voorwerp heeft een view
-            }
-            else
-            {
-                // Voorwerp heeft geen view
-                vwViews.add(new VoorwerpView(vw));
+            if (!this.controleerViewLijst(vw)){
+                // Voorwerp heeft geen view -> maak een nieuw view aan van dit voorwerp
+                VoorwerpView vww = new VoorwerpView(vw);
+                vwViews.add(vww);
+                getChildren().add(vww);
             }
             
-                     
         }
-        
-       
     }
-    
-    private boolean controleer(Voorwerp vw){
+    private boolean controleerViewLijst(Voorwerp vw){
+        boolean result = false;
         for (VoorwerpView vww: vwViews){
                 if (vww.getVoorwerp()==vw){
-                   return true;
+                  result = true;
                    
                 }
                                 
         }
-        return false;
+        return result;
     }
+    
+    
+    
+    //////////////////////
+    /**
+     * Tijdens het spel worden er voorwerpen verwijdererd uit de voorwerpenlijst, bijvoorbeeld nadat de speler een brandstof opneemt.
+     * Het is dan zo dat een het voorwerpview van dit voorwerp ook verwijderd moet worden.
+     * 
+     */
+    private void verwijderView(){
+        for (VoorwerpView vww: vwViews){
+            if (!this.controleerVoorwerplijst(vww)){
+                // Het voorwerp van deze view zit niet in de voorwerpenlijst -> dus verwijder deze view
+                getChildren().remove(vww);
+                vwViews.remove(vww);
+                return;
+            }
+           
+                                
+        }
+    }
+    private boolean controleerVoorwerplijst(VoorwerpView vww){
+        boolean result = false;
+        while (voorwerpenLijst.hasNext()){
+            Voorwerp vw = voorwerpenLijst.next();
+            if (vww.getVoorwerp()==vw){
+                return true;
+            }
+        }
+        return false;
+
+        
+    }
+    
     
     
     

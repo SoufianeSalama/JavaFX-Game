@@ -35,7 +35,13 @@ public class Voorwerp {
     private VoertuigType voertuigType;
     
     
-
+    /**
+     * Eerste constructor van de voorwerp klasse, gebruikt om de voorwerpen muur en brandstof aan te maken
+     * 
+     * @param type VoorwerpType
+     * @param x x-coordinaat van het voorwerp
+     * @param y y-coordinaat van het voorwerp
+     */
     public Voorwerp(VoorwerpType type, int x, int y) {
         this.type = type;
         this.voorwerpX = x;
@@ -50,6 +56,15 @@ public class Voorwerp {
         this.setVWParameters();
     }
     
+    /**
+     * Tweede contructor van de voorwerp klasse, gebruikt om de voorwerpen speler en voertuig aan te maken
+     * 
+     * @param type  VoorwerpType
+     * @param x     x-coordinaat van het voorwerp
+     * @param y     y-coordinaat van het voorwerp
+     * @param vt    VoertuigType
+     * @param vijand true of false
+     */
     public Voorwerp(VoorwerpType type, int x, int y, VoertuigType vt, boolean vijand) {
         this.type = type;
         this.voorwerpX = x;
@@ -63,6 +78,10 @@ public class Voorwerp {
         this.setVWParameters();
     }
     
+    /**
+     * De methode "setVWParameters" stelt de nodige parameters van een voorwerp in naar gelang het voorwerpType,
+     * zoals beschadiging waardes, is het duwbaar en/of neembaar, de breedte en lengte en of het voowerp mag bewegen
+     */
     private void setVWParameters(){
         switch (this.type){
             case SPELER:
@@ -84,7 +103,7 @@ public class Voorwerp {
                         break;
                     
                     case TRUCK:
-                        this.beschadigingAanAnderen = 0.3;
+                        this.beschadigingAanAnderen = 0.1;
                         this.lengteVW = 10;
                         this.breedteVW = 4;
                         break;
@@ -120,63 +139,117 @@ public class Voorwerp {
         }
     }
 
+    /**
+     * Geeft de x-coordinaat van de het voorwerp terug
+     * @return voorwerpX de x-coordinaat van het voorwerp (int)
+     */
     public int getVoorwerpX() {
         return voorwerpX;
     }
 
+    /**
+     * Geeft de y-coordinaat van de het voorwerp terug
+     * @return voorwerpY de y-coordinaat van het voorwerp (int)
+     */
     public int getVoorwerpY() {
         return voorwerpY;
     }
 
+    /**
+     * Geeft het type van de voorwerp terug (muur, voertuig, brandstof, speler)
+     * @return type VoorwerpType
+     */
     public VoorwerpType getType() {
         return type;
     }
-
+    
+    /**
+     * Geeft het type voertuig terug (Auto, motor, truck)
+     * @return voertuigType VoertuigType
+     */
     public VoertuigType getVoertuigType() {
         return voertuigType;
     }
     
+    /**
+     * Geeft de beschadigingswaarde aan andere voorwerpen (voertuigen) van dit voorwerp terug
+     * @return beschadigingAanAndere waarde van 0.00-1.00
+     */
     public double getBeschadigingAanAnderen() {
         return beschadigingAanAnderen;
     }
-
-//    public double getBeschadigingAanZichzelf() {
-//        return beschadigingAanZichzelf;
-//    }
-
+    
+    /**
+     * Geeft de huidige beschadidingswaarde van dit voorwerp terug
+     * @return totBeschadigingVW waarde van 0.00-1.00
+     */
     public double getTotBeschadigingVW() {
         return totBeschadigingVW;
     }
-
+    
+    /**
+     * Is dit voorwerp dood(true) / levend(false) (enkel van toepassing als het de vijand voertuig is)
+     * @return dood true of false
+     */
     public boolean isDood() {
         return dood;
     }
-
+    
+    /**
+     * Is dit voorwerp duwbaar?
+     * @return duwbaar true of false
+     */
     public boolean isDuwbaar() {
         return duwbaar;
     }
-
+    
+    /**
+     * Is dit voorwerp (voertuig) een vijand?
+     * @return vijand true of false
+     */
     public boolean isVijand() {
         return vijand;
     }
-
+    
+    /**
+     * Is dit voorwerp neembaar? enkel van toepassing voor brandstof
+     * @return neembaar true of false
+     */
     public boolean isNeembaar() {
         return neembaar;
     }
     
+    /**
+     * Wat is de lengte (verticaal) van dit voorwerp?
+     * @return lengteVW pixels
+     */
     public int getLengteVW(){
        return this.lengteVW; 
     }
     
+    /**
+     * Wat is de breedte (horizontaal) van dit voorwerp?
+     * @return breedteVW pixels
+     */
     public int getBreedteVW(){
         return this.breedteVW;
     }
+    
     // Setters
     
+    /**
+     * Deze methode stelt de toestand van een voorwerp in levend/dood
+     * @param dood true of false
+     */
     public void setDood(boolean dood) {
         this.dood = dood;
     }
-
+    
+    /**
+     * Deze methode verhoogt het beschadigingsniveau van dit voorwerp
+     * als het beschadigingsniveau hoger of gelijk is aan 1.00 dan is het voorwerp dood
+     * @param totBeschadigingVW waarde van 0.00-1.00
+     */
     public void setTotBeschadigingVW(double totBeschadigingVW) {
         
         this.totBeschadigingVW += totBeschadigingVW;
@@ -184,25 +257,44 @@ public class Voorwerp {
             this.dood = true;
         }
     }
-
+    
+    /**
+     * Deze methode zorgt ervoor dat nadat een speler een vijand heeft uitgeschakeld dat het geen vijand is
+     * @param vijand true of false
+     */
     public void setVijand(boolean vijand) {
         this.vijand = vijand;
     }
     
     
-    
+    /**
+     * Deze methode verplaatst het voowerp naar links aan de hand van de meegestuude parameter dx
+     * @param dx horizontale verplaatsing
+     */
     public void verplaatsLinks(int dx){
         this.voorwerpX -=dx;
     }
     
+    /**
+     * Deze methode verplaatst het voorwerp naar rechts aan de hand van de meegestuurde parameter dx
+     * @param dx horizontale verplaatsing
+     */
     public void verplaatsRechts(int dx){
         this.voorwerpX +=dx;
     }
     
+    /**
+     * Deze methode verplaatst het voowerp naar onder aan de hand van de meegestuude parameter dy
+     * @param dy verticale verplaatsing
+     */
     public void verplaatsOnder(int dy){
         this.voorwerpY +=dy;
     }
     
+    /**
+     * Deze methode verplaatst het voowerp naar boven aan de hand van de meegestuude parameter dy
+     * @param dy verticale verplaatsing
+     */
     public void verplaatsBoven(int dy){
         this.voorwerpY -=dy;
     }

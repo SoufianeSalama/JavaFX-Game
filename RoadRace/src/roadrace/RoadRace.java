@@ -23,35 +23,35 @@ public class RoadRace extends Application {
     public void start(Stage mainStage) throws Exception {
         
         
-//        Level model = new Level();
-//        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLRoadRace.fxml"));
-//        Parent root = lader.load();
-//        
-//        FXMLRoadRaceController controller = lader.getController();
-//        controller.setModel(model);
-//        
-//        Beweging b = new Beweging(model, controller);
-//        Thread t = new Thread(b);
-//        t.setDaemon(true);
-//        t.start();
-//        
-//        Scene s = new Scene(root);
-//        
-//        stage.setScene(s);
-//        stage.setTitle("Road Race");
-//        stage.show();
-        
-        
-        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLStartScherm.fxml"));
+        Level model = new Level();
+        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLRoadRace.fxml"));
         Parent root = lader.load();
-                
-        FXMLStartController controller = lader.getController();
-        Scene resultScene = new Scene(root);
-        controller.setStage(mainStage);
         
-        mainStage.setScene(resultScene);
+        FXMLRoadRaceController controller = lader.getController();
+        controller.setModel(model);
+        
+        Beweging b = new Beweging(model, controller);
+        Thread t = new Thread(b);
+        t.setDaemon(true);
+        t.start();
+        
+        Scene s = new Scene(root);
+        
+        mainStage.setScene(s);
         mainStage.setTitle("Road Race");
         mainStage.show();
+        
+        
+//        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLStartScherm.fxml"));
+//        Parent root = lader.load();
+//                
+//        FXMLStartController controller = lader.getController();
+//        Scene resultScene = new Scene(root);
+//        controller.setStage(mainStage);
+//        
+//        mainStage.setScene(resultScene);
+//        mainStage.setTitle("Road Race");
+//        mainStage.show();
     }
 
     /**

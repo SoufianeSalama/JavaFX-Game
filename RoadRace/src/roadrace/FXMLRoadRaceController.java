@@ -90,6 +90,7 @@ public class FXMLRoadRaceController {
     public void updateViews(){
         //paneel.getChildren().clear();
         view.updateVWViews();
+        
         fuelbar.setProgress(model.getBrandstof());
         damagebar.setProgress(model.getBeschadiging());
         level.setText(Integer.toString(model.getLevel()));
@@ -97,11 +98,20 @@ public class FXMLRoadRaceController {
         afstand.setText(Integer.toString(model.getTotAfstand()));
         
     }
+    public void beweegVoorwerpen(){
+        model.beweegVoorwerpen();
+        view.updateVWViews();
+    }
     
     public void setMainStage(Stage s){
         this.mainStage = s;
     }
    
+    /**
+     * De methode "startResultaat" uitgevoerd als de speler het spel wint of verliest
+     * en navigeert terug naar de startpagina, waar de resultaten getoond worden -> aan de "StartController" wordt de data meegestuurd
+     * M.b.v. de klasse "FadeTransistion" krijgen een mooiere overgang tussen de scene's
+     */
     private void startResultaat(){
         FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLStartScherm.fxml"));
         

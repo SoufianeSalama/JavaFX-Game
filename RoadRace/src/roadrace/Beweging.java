@@ -30,8 +30,9 @@ public class Beweging implements Runnable {
         while (!spelerDood){
             try{
                 Thread.sleep(1000);
-                    model.beweegVoorwerpen();
+                
                 Platform.runLater(()->{
+                    controller.beweegVoorwerpen();
                     controller.updateViews();
                 });
             }
