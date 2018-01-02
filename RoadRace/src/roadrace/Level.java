@@ -9,6 +9,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
+import javafx.application.Platform;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
@@ -27,9 +28,13 @@ public class Level {
     private int level, snelheid, totAfstand;
     
     private double brandstof, beschadiging;
-    private boolean brandstofLevel;
+    private boolean spelGewonnen;
     
     public Voorwerp speler;
+    private VoertuigType vijandVoertuigtype;
+    
+    private Vijand vijand;
+    private Thread thread;
     
     private int snelheidBeweging, afstandTick;
     
@@ -51,10 +56,14 @@ public class Level {
      */
     public void initParameters(){
         this.level = 1;
-        this.setLevelParam();
-        random = new Random();
+        this.spelGewonnen = false;
+        this.random = new Random();
+        this.voorwerpen = new ArrayList<>();
         
-        voorwerpen = new ArrayList<>();
+        // Vijand thread
+        this.vijand = new Vijand(this);
+        
+        this.setLevelParam();
         
         this.spelerX = 9;
         this.spelerY = 15;
@@ -195,10 +204,11 @@ public class Level {
                         
                         if (vw.isVijand() && vw.isDood()){
                             // Speler raakt vijand en is dood
+                            vw.setVijand(false);
                             // Level verhogen
                             System.out.println("Vijand verslagen -> Verhoog level");
                             this.verhoogLevel();
-                            vw.setVijand(false);
+                            
                         }
 
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
@@ -241,10 +251,11 @@ public class Level {
                         if (vw.isVijand() && vw.isDood()){
                             // Speler raakt vijand en is dood
                             // Level verhogen
+                            vw.setVijand(false);
                             System.out.println("Vijand verslagen -> Verhoog level");
                             
                             this.verhoogLevel();
-                            vw.setVijand(false);
+                            
                         }
 
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
@@ -356,6 +367,7 @@ public class Level {
         }
         else{
             // Speler heeft gewonnen
+            this.spelGewonnen=true;
         }
     }
     
@@ -370,24 +382,33 @@ public class Level {
                 this.snelheidBeweging = 800;
                 this.brandstof = 1;
                 // Vijand => Motor
+                vijandVoertuigtype = VoertuigType.MOTOR;
+                this.thread = new Thread(this.vijand);
+                this.thread.start();
+                
                 break;
             case (2):
                 this.snelheid = 75;
                 this.snelheidBeweging = 600;
                 // Vijand => Auto
+                vijandVoertuigtype = VoertuigType.AUTO;
+                //this.thread.start(); // WERKT NIET NA DE EERSTE AANROEP (hierboven) 
+                this.thread = new Thread(this.vijand);
+                this.thread.start();
                 break;
               
             case (3):
                 this.snelheid = 100;
                 this.snelheidBeweging = 400;
                 // Vijand => Truck
+                vijandVoertuigtype = VoertuigType.TRUCK;
+                //this.thread.start();// WERKT NIET NA DE EERSTE AANROEP (hierboven) 
+                this.thread = new Thread(this.vijand);
+                this.thread.start();
                 break;
         }
         this.afstandTick = this.snelheidBeweging/this.snelheid;
     }
-    
-   
-    
     
     /**
      * De methode "beweegVoorwerpen" wordt uitgevoerd na elke threadtick van de klasse "Beweging", met behulp hiervan kunnen de voorwerpen bewegen (vallen)
@@ -428,7 +449,19 @@ public class Level {
                              voorwerpenLijst.remove();
                          }
                          else{
-                             vw.verplaatsOnder(dy);
+                             if (vw.getType()==VoorwerpType.VOERTUIG && vw.isVijand()){
+                                // De vijand beweegt na een specifieke hoogte niet meer => hij rijdt als het ware even snel als de speler
+                                if (vw.getVoorwerpY()<7){
+                                    vw.verplaatsOnder(dy);
+                                }
+                             }
+                             else{
+                                 // Alle andere gewone voertuig bewegen wel gewoon nog => ze worden ingehaald door de speler
+                                 vw.verplaatsOnder(dy);
+                             }
+                             
+                             
+                             
                          }
                     }
                 }
@@ -447,11 +480,10 @@ public class Level {
                         System.out.println("Voertuig raakt speler");
                         this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
                         this.beschadiging = this.speler.getTotBeschadigingVW();
-
                         vw.setTotBeschadigingVW(this.speler.getBeschadigingAanAnderen());
-
+                        
                         startBotsGeluid();
-                                
+                        
                         if (vw.isVijand() && vw.isDood()){
                             // Speler raakt vijand en is dood
                             // Level verhogen
@@ -459,21 +491,14 @@ public class Level {
                             this.verhoogLevel();
                             vw.setVijand(false);
                         }
-
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
                         // eerste parameters is het voorwerp dat gaat botsen 
                         // tweede parameters id het voorwerp dat gebotst wordt
                         this.botsting(vw,speler);
-
                     }
-                    
                 }
-                
-                
             }
-
         }
-        
         // Afstand verhogen
         this.totAfstand += this.afstandTick;
         // Brandstof verlagen
@@ -483,7 +508,7 @@ public class Level {
         else{
             //this.speler.setDood(true);
         }
-        nieuweVoorwerpen();
+        //nieuweVoorwerpen();
     }
     
     
@@ -496,24 +521,35 @@ public class Level {
     private void nieuweVoorwerpen(){
         // nieuw voorwerp tonen
         int randomVoorwerp = random.nextInt(15);
+        randomVoorwerp=1;
         int randomVoorwerpX;
         System.out.println("Random voorwerp: " + randomVoorwerp);
         switch (randomVoorwerp){
-
             case 1:
-                if (!brandstofLevel){
-                    randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
-                    
-                    voorwerpen.add(new Voorwerp(VoorwerpType.BRANDSTOF, randomVoorwerpX,-5));
-                    break;
+                randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
+                Voorwerp newVW = new Voorwerp(VoorwerpType.BRANDSTOF, randomVoorwerpX,-5);
+                voorwerpen.add(newVW);
+                
+                Iterator<Voorwerp> voorwerpenLijst = voorwerpen.iterator();
+                while(voorwerpenLijst.hasNext())   {
+                    Voorwerp vw = voorwerpenLijst.next();
+                    if (!newVW.isOp(vw, newVW.getVoorwerpX(),newVW.getVoorwerpY())){
+                        // nieuw voorwerp bevindt zich op een bestaand voorwerp -> verplaaten
+                        newVW.verplaatsRechts(3);
+//                        if (newVW.getVoorwerpX()<10)
+//                        
+//                        }
+                    }
                 }
+                    
+                    break;
 
             case 4:
                 randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
                 voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, -5, VoertuigType.AUTO, false));
                 break;
                 
-            case 6:
+            case 9:
                 randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
                 voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, -5, VoertuigType.MOTOR, false));
                 break;
@@ -522,9 +558,10 @@ public class Level {
         
     }
 
-    private void nieuweVijand(VoertuigType vt){
+    public void nieuwVijand(){
+        System.out.println("nieuwe vijand");
         int randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, -5, randomVoorwerpX, vt, true));
+        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, -5, this.vijandVoertuigtype, true));
     }
     
     
@@ -611,6 +648,10 @@ public class Level {
     
     public int getAantalVoorwerpen(){
         return this.voorwerpen.size();
+    }
+
+    public boolean isSpelGewonnen() {
+        return spelGewonnen;
     }
     
     

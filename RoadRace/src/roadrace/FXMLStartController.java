@@ -78,7 +78,7 @@ public class FXMLStartController {
         this.mainStage = s;
     }
     
-    public void setEinde(boolean isDood, int level, int afstand){
+    public void setEinde(boolean isSpelGewonnen,boolean isDood, int level, int afstand){
         this.behaaldeLevel = level;
         this.behaaldeAfstand = afstand;
         if (isDood){
@@ -88,7 +88,7 @@ public class FXMLStartController {
                 "Behaalde Afstand " + Integer.toString(behaaldeAfstand)
             );
         }
-        else{
+        else if (isSpelGewonnen){
             txtScore.setText(
                 "GEWONNEN" + "\n" + 
                 "Behaalde Level: " + Integer.toString(behaaldeLevel) + "\n" +

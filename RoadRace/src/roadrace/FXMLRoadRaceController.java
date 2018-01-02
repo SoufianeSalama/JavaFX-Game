@@ -58,7 +58,7 @@ public class FXMLRoadRaceController {
     }
     
     public void beweegSpeler(KeyEvent e){
-        if (!model.speler.isDood()){
+        if (!model.speler.isDood() || !model.isSpelGewonnen()){
             switch (e.getCode()){
                 case LEFT:
                     model.beweegSpelerLinks();
@@ -81,7 +81,7 @@ public class FXMLRoadRaceController {
         }
         else
         {
-            System.out.println("Speler is dood"); 
+            System.out.println("Speler is dood of heeft gewonnen"); 
             startResultaat();
         }
         
@@ -125,7 +125,7 @@ public class FXMLRoadRaceController {
             ft.play();
             
             FXMLStartController controller = lader.getController();
-            controller.setEinde(model.isDood(),model.getLevel(), model.getTotAfstand());
+            controller.setEinde(model.isSpelGewonnen(), model.isDood(),model.getLevel(), model.getTotAfstand());
             
             resultScene = new Scene(root);
             mainStage.setScene(resultScene);
