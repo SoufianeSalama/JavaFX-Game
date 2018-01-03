@@ -25,24 +25,25 @@ public class Level {
     private ArrayList<Voorwerp> voorwerpen;
     
     private int spelerX, spelerY;
-    private int level, snelheid, totAfstand;
+    private int level, snelheid, totAfstand, bewegingsInterval, afstandTick;
     
     private double brandstof, beschadiging;
     private boolean spelGewonnen;
-    
+
     public Voorwerp speler;
     private VoertuigType vijandVoertuigtype;
     
     private Vijand vijand;
     private Thread thread;
     
-    private int snelheidBeweging, afstandTick;
-    
     private Random random;
     
     private Media media;
     private MediaPlayer mediaplayer;
         
+    /**
+     *
+     */
     public Level() {
         initParameters();
     }
@@ -75,6 +76,7 @@ public class Level {
             voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a));
             voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 21, a));
         }
+
     }
     
     /**
@@ -229,7 +231,6 @@ public class Level {
         // Controle of er al een voorwerp op het doelcoordinaat van het gebotste voertuig staat
         for (Voorwerp vw: voorwerpen){
             
-//            if( vw.getType() != VoorwerpType.SPELER){
             if( vw != reactieVW){
     
                 if (vw.isOp(reactieVW, doelX,doelY)){
@@ -250,10 +251,9 @@ public class Level {
                         
                         if (vw.isVijand() && vw.isDood()){
                             // Speler raakt vijand en is dood
-                            // Level verhogen
                             vw.setVijand(false);
+                            // Level verhogen
                             System.out.println("Vijand verslagen -> Verhoog level");
-                            
                             this.verhoogLevel();
                             
                         }
@@ -263,10 +263,7 @@ public class Level {
                         // tweede parameters id het voorwerp dat gebotst wordt
                         this.botsting(reactieVW,vw);
                         return false;
-                        
                     }
-                    
-                    
                 }
             }   
         }
@@ -379,8 +376,8 @@ public class Level {
         switch (this.level){
             case (1):
                 this.snelheid = 50;
-                this.snelheidBeweging = 800;
                 this.brandstof = 1;
+                this.bewegingsInterval = 1000;
                 // Vijand => Motor
                 vijandVoertuigtype = VoertuigType.MOTOR;
                 this.thread = new Thread(this.vijand);
@@ -389,7 +386,7 @@ public class Level {
                 break;
             case (2):
                 this.snelheid = 75;
-                this.snelheidBeweging = 600;
+                this.bewegingsInterval = 800;
                 // Vijand => Auto
                 vijandVoertuigtype = VoertuigType.AUTO;
                 //this.thread.start(); // WERKT NIET NA DE EERSTE AANROEP (hierboven) 
@@ -399,7 +396,7 @@ public class Level {
               
             case (3):
                 this.snelheid = 100;
-                this.snelheidBeweging = 400;
+                this.bewegingsInterval = 600;
                 // Vijand => Truck
                 vijandVoertuigtype = VoertuigType.TRUCK;
                 //this.thread.start();// WERKT NIET NA DE EERSTE AANROEP (hierboven) 
@@ -407,7 +404,7 @@ public class Level {
                 this.thread.start();
                 break;
         }
-        this.afstandTick = this.snelheidBeweging/this.snelheid;
+        this.afstandTick = this.bewegingsInterval/this.snelheid;
     }
     
     /**
@@ -459,9 +456,6 @@ public class Level {
                                  // Alle andere gewone voertuig bewegen wel gewoon nog => ze worden ingehaald door de speler
                                  vw.verplaatsOnder(dy);
                              }
-                             
-                             
-                             
                          }
                     }
                 }
@@ -506,9 +500,9 @@ public class Level {
              this.brandstof -=0.01;
         }
         else{
-            //this.speler.setDood(true);
+            this.speler.setDood(true);
         }
-        //nieuweVoorwerpen();
+        nieuweVoorwerpen();
     }
     
     
@@ -521,47 +515,63 @@ public class Level {
     private void nieuweVoorwerpen(){
         // nieuw voorwerp tonen
         int randomVoorwerp = random.nextInt(15);
-        randomVoorwerp=1;
-        int randomVoorwerpX;
-        System.out.println("Random voorwerp: " + randomVoorwerp);
+        int randomVoorwerpX = random.nextInt(12)+4;// Horizonale waarde ligt tussen 4 en 16
+        int VoorwerpY = -9; // grote waarde is vooral door de truck voorwerpen
+        Voorwerp nieuwVW;
+                
         switch (randomVoorwerp){
             case 1:
-                randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
-                Voorwerp newVW = new Voorwerp(VoorwerpType.BRANDSTOF, randomVoorwerpX,-5);
-                voorwerpen.add(newVW);
+                nieuwVW = new Voorwerp(VoorwerpType.BRANDSTOF, randomVoorwerpX,VoorwerpY);
+                voorwerpen.add(nieuwVW);
                 
-                Iterator<Voorwerp> voorwerpenLijst = voorwerpen.iterator();
-                while(voorwerpenLijst.hasNext())   {
-                    Voorwerp vw = voorwerpenLijst.next();
-                    if (!newVW.isOp(vw, newVW.getVoorwerpX(),newVW.getVoorwerpY())){
-                        // nieuw voorwerp bevindt zich op een bestaand voorwerp -> verplaaten
-                        newVW.verplaatsRechts(3);
-//                        if (newVW.getVoorwerpX()<10)
-//                        
-//                        }
-                    }
-                }
-                    
-                    break;
+                this.controleNieuweVoorwerpen(nieuwVW);
+                break;
 
             case 4:
-                randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
-                voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, -5, VoertuigType.AUTO, false));
+                nieuwVW = new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, VoorwerpY, VoertuigType.AUTO, false);
+                voorwerpen.add(nieuwVW);
+                
+                this.controleNieuweVoorwerpen(nieuwVW);
                 break;
                 
             case 9:
-                randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
-                voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, -5, VoertuigType.MOTOR, false));
+                nieuwVW = new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, VoorwerpY, VoertuigType.MOTOR, false);
+                voorwerpen.add(nieuwVW);
+                
+                this.controleNieuweVoorwerpen(nieuwVW);
                 break;
 
         }
         
     }
+    private void controleNieuweVoorwerpen(Voorwerp nieuwVW){
+        Iterator<Voorwerp> voorwerpenLijst = voorwerpen.iterator();
+        while(voorwerpenLijst.hasNext())   {
+            Voorwerp vw = voorwerpenLijst.next();
+            if (vw != nieuwVW){
+                // Enkel kijken naar voorwerpen die al bestaan => dus alles buiten het nieuw voorwerp
+                if (vw.isOp(nieuwVW, nieuwVW.getVoorwerpX(),nieuwVW.getVoorwerpY())){
+                    // nieuw voorwerp bevindt zich op een bestaand voorwerp -> verplaaten
+                    if (nieuwVW.getVoorwerpX()>=2 && nieuwVW.getVoorwerpX()<=15){
+                        nieuwVW.verplaatsRechts(3);
+                    }
+                    else{
+                        nieuwVW.verplaatsLinks(3);
+                    }
+                }
+            }
+        }
+    }
 
+    /**
+     *
+     */
     public void nieuwVijand(){
         System.out.println("nieuwe vijand");
         int randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
-        voorwerpen.add(new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, -5, this.vijandVoertuigtype, true));
+        Voorwerp nieuwVW =new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, -5, this.vijandVoertuigtype, true);
+        voorwerpen.add(nieuwVW);
+        controleNieuweVoorwerpen(nieuwVW);
     }
     
     
@@ -641,18 +651,33 @@ public class Level {
         return totAfstand;
     }
     
+    /**
+     *
+     * @return
+     */
     public Iterator<Voorwerp> getVoorwerpenLijst()
     {
         return this.voorwerpen.iterator();
     }  
     
+    /**
+     *
+     * @return
+     */
     public int getAantalVoorwerpen(){
         return this.voorwerpen.size();
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isSpelGewonnen() {
-        return spelGewonnen;
+        return this.spelGewonnen;
     }
     
+    public int getBewegingsInterval(){
+        return this.bewegingsInterval;
+    }
     
 }

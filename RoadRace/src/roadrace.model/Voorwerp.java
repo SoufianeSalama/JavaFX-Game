@@ -14,7 +14,6 @@ public class Voorwerp {
     private VoorwerpType type;
     private int voorwerpX, voorwerpY;
     private int lengteVW, breedteVW;
-    private boolean richting; 
     private boolean dood;
     
     // BESCHADIGING 
@@ -306,6 +305,7 @@ public class Voorwerp {
      * De methode "isOp()" controlleert of een voorwerp zich bevindt op de doelcoordinaten van de speler of van een gebotst voertuig.
      * Deze methode wordt voor alle voorwerpen uitgevoerd
      * 
+     * @param actie
      * @param doelX
      * @param doelY
      * @return 

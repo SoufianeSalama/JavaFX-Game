@@ -14,6 +14,10 @@ import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ *
+ * @author Soufiane
+ */
 public class FXMLRoadRaceController {
     
     private Level model;
@@ -47,6 +51,10 @@ public class FXMLRoadRaceController {
         paneel.setFocusTraversable(true);
     }
     
+    /**
+     *
+     * @param model
+     */
     public void setModel(Level model){
         this.model = model;
         paneel.getChildren().clear();
@@ -57,8 +65,12 @@ public class FXMLRoadRaceController {
        
     }
     
+    /**
+     *
+     * @param e
+     */
     public void beweegSpeler(KeyEvent e){
-        if (!model.speler.isDood() || !model.isSpelGewonnen()){
+        if (!model.speler.isDood() && !model.isSpelGewonnen()){
             switch (e.getCode()){
                 case LEFT:
                     model.beweegSpelerLinks();
@@ -87,6 +99,9 @@ public class FXMLRoadRaceController {
         
     }
     
+    /**
+     *
+     */
     public void updateViews(){
         //paneel.getChildren().clear();
         view.updateVWViews();
@@ -98,11 +113,19 @@ public class FXMLRoadRaceController {
         afstand.setText(Integer.toString(model.getTotAfstand()));
         
     }
+
+    /**
+     *
+     */
     public void beweegVoorwerpen(){
         model.beweegVoorwerpen();
         view.updateVWViews();
     }
     
+    /**
+     *
+     * @param s
+     */
     public void setMainStage(Stage s){
         this.mainStage = s;
     }

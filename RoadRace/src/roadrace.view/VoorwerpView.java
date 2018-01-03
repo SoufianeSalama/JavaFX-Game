@@ -13,6 +13,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
+import roadrace.LevelView;
+import roadrace.Voorwerp;
+import roadrace.Voorwerp;
+import roadrace.VoorwerpType;
+import roadrace.VoorwerpType;
 
 /**
  *
@@ -25,6 +30,10 @@ public class VoorwerpView extends Group{
     
     private Rectangle vwIndicator;
 
+    /**
+     *
+     * @param voorwerp
+     */
     public VoorwerpView(Voorwerp voorwerp) {
         this.vw = voorwerp;
         this.VERGROTING = LevelView.VERGROTING;
@@ -135,7 +144,9 @@ public class VoorwerpView extends Group{
         return iv;
     }
     
-  
+    /**
+     *
+     */
     public void update(){
         this.paneel.setTranslateX(this.vw.getVoorwerpX() * this.VERGROTING);
         this.paneel.setTranslateY(this.vw.getVoorwerpY() * this.VERGROTING);
@@ -161,6 +172,10 @@ public class VoorwerpView extends Group{
         getChildren().remove(this.vw);
     }
     
+    /**
+     *
+     * @return
+     */
     public Voorwerp getVoorwerp(){
         return this.vw;
     }

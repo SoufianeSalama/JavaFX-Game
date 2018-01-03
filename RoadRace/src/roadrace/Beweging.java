@@ -15,21 +15,24 @@ public class Beweging implements Runnable {
     
     private Level model;
     private FXMLRoadRaceController controller;
-    private boolean spelerDood;
 
+    /**
+     *
+     * @param model
+     * @param controller
+     */
     public Beweging(Level model, FXMLRoadRaceController controller) {
         this.model = model;
         this.controller = controller;
-        this.spelerDood = model.speler.isDood();
     }
     
      
     
     @Override
     public void run() {
-        while (!spelerDood){
+        while (!model.speler.isDood()){
             try{
-                Thread.sleep(1000);
+                Thread.sleep(model.getBewegingsInterval());
                 
                 Platform.runLater(()->{
                     controller.beweegVoorwerpen();
@@ -39,8 +42,6 @@ public class Beweging implements Runnable {
             catch(InterruptedException e){
                 System.out.println("Probleem met run functie " + e.getMessage());
             }
-            this.spelerDood = model.speler.isDood();
-            
         }
     }
     

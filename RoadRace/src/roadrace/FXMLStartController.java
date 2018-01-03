@@ -12,6 +12,10 @@ import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+/**
+ *
+ * @author Soufiane
+ */
 public class FXMLStartController {
 
     @FXML
@@ -61,7 +65,7 @@ public class FXMLStartController {
             Beweging b = new Beweging(model, controller);
             Thread t = new Thread(b);
             t.setDaemon(true);
-//            t.start();
+            t.start();
 
             gameScene = new Scene(root);
             mainStage.setScene(gameScene);
@@ -74,25 +78,36 @@ public class FXMLStartController {
         
     }
     
+    /**
+     *
+     * @param s
+     */
     public void setStage(Stage s){
         this.mainStage = s;
     }
     
+    /**
+     *
+     * @param isSpelGewonnen
+     * @param isDood
+     * @param level
+     * @param afstand
+     */
     public void setEinde(boolean isSpelGewonnen,boolean isDood, int level, int afstand){
         this.behaaldeLevel = level;
         this.behaaldeAfstand = afstand;
         if (isDood){
             txtScore.setText(
                 "VERLOREN" + "\n" + 
-                "Behaalde Level: " + Integer.toString(behaaldeLevel) + "\n" +
-                "Behaalde Afstand " + Integer.toString(behaaldeAfstand)
+                "Behaald Level: " + Integer.toString(behaaldeLevel) + "\n" +
+                "Behaalde Afstand: " + Integer.toString(behaaldeAfstand) +"m"
             );
         }
         else if (isSpelGewonnen){
             txtScore.setText(
                 "GEWONNEN" + "\n" + 
-                "Behaalde Level: " + Integer.toString(behaaldeLevel) + "\n" +
-                "Behaalde Afstand " + Integer.toString(behaaldeAfstand)
+                "Behaald Level: " + Integer.toString(behaaldeLevel) + "\n" +
+                "Behaalde Afstand: " + Integer.toString(behaaldeAfstand) + "m"
             );
         }
             

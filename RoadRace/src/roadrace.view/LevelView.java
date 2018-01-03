@@ -13,18 +13,30 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import roadrace.Level;
+import roadrace.Level;
+import roadrace.Voorwerp;
+import roadrace.Voorwerp;
+import roadrace.VoorwerpView;
 
 /**
  *
  * @author Soufiane
  */
 public class LevelView extends Region{
+
+    /**
+     *
+     */
     public final static int VERGROTING = 25;
     private Level model;
     private ArrayList<VoorwerpView> vwViews;
     private Iterator<Voorwerp> voorwerpenLijst;
     
-    
+    /**
+     *
+     * @param model
+     */
     public LevelView(Level model) {
         this.model = model;
         vwViews = new ArrayList<>();
@@ -62,6 +74,9 @@ public class LevelView extends Region{
         
     }
     
+    /**
+     *
+     */
     public void updateVWViews(){
         checkVoorwerpenEnViews();
         for (VoorwerpView vww : vwViews){

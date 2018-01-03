@@ -16,13 +16,16 @@
          </font>
       </Button>
       <Label layoutX="7.0" layoutY="576.0" text="Soufiane Salama__Schakel IIW__2017-2018" />
-      <TextArea fx:id="txtScore" cacheShape="false" editable="false" layoutX="131.0" layoutY="133.0" prefHeight="134.0" prefWidth="338.0" style="text-allign: center;;" text="Uitleg / Score" wrapText="true">
+      <TextArea fx:id="txtScore" cacheShape="false" editable="false" layoutX="46.0" layoutY="75.0" prefHeight="272.0" prefWidth="508.0" style="-fx-alignment: center;" text="Hou de weg veilig door alle vijanden te verslaan&#10;MAAR houd je brandstof en beschadiging in de gaten&#10;&#10;Tip:&#10;Gebruik andere voertuigen om je vijand te beschadigen&#10;" wrapText="true">
          <effect>
             <ColorAdjust />
          </effect>
          <cursor>
             <Cursor fx:constant="NONE" />
          </cursor>
+         <font>
+            <Font name="System Bold" size="21.0" />
+         </font>
       </TextArea>
    </children>
 </AnchorPane>

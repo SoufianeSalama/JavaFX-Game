@@ -14,6 +14,11 @@ import javafx.application.Platform;
 public class Vijand implements Runnable {
     
     private Level model;
+
+    /**
+     *
+     * @param m
+     */
     public Vijand(Level m) {
         this.model = m;
     }
@@ -22,7 +27,7 @@ public class Vijand implements Runnable {
     @Override
     public void run() {
         try{
-            Thread.sleep(10000);
+            Thread.sleep(15000);
             Platform.runLater(()-> {
                 this.model.nieuwVijand();
             });
