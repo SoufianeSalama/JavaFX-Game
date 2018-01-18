@@ -35,22 +35,30 @@ public class FXMLStartController {
     
     // Te tonen resulaten
     private int behaaldeAfstand, behaaldeLevel;
+    
+    private Parent root;
 
     @FXML
     void initialize() {
-        //txtScore.setText("Hou de straten veilig en versla alle vijanden!");
-        
         btnSpeel.setOnAction(event -> {
             this.startSpel();
         });
 
     }
     
+    /**
+     * De methode "startSpel()" wordt uitgevoerd nadat een gebruikers het spel start door op de button "START" te klikken
+     * Deze gaat eerst een nieuw level model aanmaken en maakt de RoadRaceController aan
+     * Ook wordt de beweging thread gestart, deze zordt ervoor dat de voorwerpen kunnen bewegen(als het ware vallen)
+     * Hierna wordt er naar de spel scene getoond door de scene in de (main)Stage te plaaten
+     * M.b.v. de klasse "FadeTransistion" krijgen een mooiere overgang tussen de scene's
+     */
     private void startSpel(){
         Level model = new Level();
-        FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLRoadRace.fxml"));
+        
         try{
-            Parent root = lader.load();
+            FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLRoadRace.fxml"));
+            this.root = lader.load();
             
             // Fade in/out
             FadeTransition ft = new FadeTransition(Duration.millis(3000), root);
@@ -68,32 +76,35 @@ public class FXMLStartController {
             t.start();
 
             gameScene = new Scene(root);
+            
             mainStage.setScene(gameScene);
+            
             mainStage.show();
 
         }
         catch(Exception e){
-            System.out.println("roadrace.FXMLStartController.startSpel()");     
+            System.out.println("roadrace.FXMLStartController.startSpel()");    
+            System.out.println(e.getLocalizedMessage());
         }
         
     }
     
     /**
-     *
-     * @param s
+     * De (setter) methode "setMainStage()" is nodig zodat deze controller de spel Scene in (main)Stage kan plaatsen
+     * @param s bevat de (main)Stage
      */
-    public void setStage(Stage s){
+    public void setMainStage(Stage s){
         this.mainStage = s;
     }
     
     /**
-     *
-     * @param isSpelGewonnen
-     * @param isDood
-     * @param level
-     * @param afstand
+     * De methode "setEinde()" wordt uitgevoerd door RoadRaceController nadat de speler heeft gewonnen of verloren.
+     * Deze gaat afhankelijk van de meegestuurde parameters de resultaten van de speler weergeven in het tekstvak
+     * @param isDood is de speler dood (true/false)
+     * @param level tot welk level is de speler geraak (1,2 of 3)
+     * @param afstand tot hoeveel m is de speler geraakt(int)
      */
-    public void setEinde(boolean isSpelGewonnen,boolean isDood, int level, int afstand){
+    public void setEinde(boolean isDood, int level, int afstand){
         this.behaaldeLevel = level;
         this.behaaldeAfstand = afstand;
         if (isDood){
@@ -103,7 +114,7 @@ public class FXMLStartController {
                 "Behaalde Afstand: " + Integer.toString(behaaldeAfstand) +"m"
             );
         }
-        else if (isSpelGewonnen){
+        else{
             txtScore.setText(
                 "GEWONNEN" + "\n" + 
                 "Behaald Level: " + Integer.toString(behaaldeLevel) + "\n" +

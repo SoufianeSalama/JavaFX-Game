@@ -44,16 +44,17 @@ public class FXMLRoadRaceController {
     private Stage mainStage;
     private Scene resultScene;
 
+    
     @FXML
     void initialize() {
-        // Knoppen
         paneel.setOnKeyPressed(this::beweegSpeler);
         paneel.setFocusTraversable(true);
     }
     
     /**
-     *
-     * @param model
+     * De (setter) methode "setModel()" is nodig zodat deze controller over de Level model beschikt 
+     * en om een nieuwe View object aan te maken
+     * @param model het level model
      */
     public void setModel(Level model){
         this.model = model;
@@ -61,12 +62,12 @@ public class FXMLRoadRaceController {
         
         view = new LevelView(model);
         paneel.getChildren().add(view);
-        
-       
     }
     
     /**
-     *
+     * De functie "beweegSpeler()" wordt uitgevoerd nadat een gebruiker op de toets klikt
+     * Afhankelijk van welke toets die meegestuurd wordt met de parameter "e" kunnen we de speler gaan bewegen
+     * Dit wordt enkel gedaan zoals de speler niet dood is en niet heeft gewonnen
      * @param e
      */
     public void beweegSpeler(KeyEvent e){
@@ -74,19 +75,15 @@ public class FXMLRoadRaceController {
             switch (e.getCode()){
                 case LEFT:
                     model.beweegSpelerLinks();
-                    //updateViews();
                     break;
                 case RIGHT:
                     model.beweegSpelerRechts();
-                    //updateViews();
                     break;
                 case UP:
                     model.beweegSpelerBoven();
-                    //updateViews();
                     break;
                 case DOWN:
                     model.beweegSpelerOnder();
-                    //updateViews();
                     break;
             }
             this.updateViews();
@@ -94,28 +91,29 @@ public class FXMLRoadRaceController {
         else
         {
             System.out.println("Speler is dood of heeft gewonnen"); 
+            this.model.stopMedia();
             startResultaat();
         }
         
     }
     
     /**
-     *
+     *  De functie "updateViews()" gaat nadat een gebruiker de speler heeft laten bewegen de view updaten 
+     *  en ook de gegevens van de speler zoals brandstof, snelheid, beschadiging, ...
      */
     public void updateViews(){
-        //paneel.getChildren().clear();
         view.updateVWViews();
-        
         fuelbar.setProgress(model.getBrandstof());
         damagebar.setProgress(model.getBeschadiging());
         level.setText(Integer.toString(model.getLevel()));
         snelheid.setText(Integer.toString(model.getSnelheid()));
         afstand.setText(Integer.toString(model.getTotAfstand()));
-        
     }
 
     /**
-     *
+     *  De functie "beweegVoorwerpen()" wordt uitgevoerd door de thread "Beweging" die ervoor zorgt dat de voorwerpen bewegen
+     *  Hij gaat eerst in het "Level" model de voorwerpen laten vallen en mbv een random nieuwe voorwerpen toevoegen
+     *  Vervolgens gaat hij in de view de voorwerpen updaten
      */
     public void beweegVoorwerpen(){
         model.beweegVoorwerpen();
@@ -123,8 +121,8 @@ public class FXMLRoadRaceController {
     }
     
     /**
-     *
-     * @param s
+     * De (setter) methode "setMainStage()" is nodig zodat deze controller de spel Scene in (main)Stage kan plaatsen
+     * @param s bevat de (main)Stage
      */
     public void setMainStage(Stage s){
         this.mainStage = s;
@@ -148,7 +146,8 @@ public class FXMLRoadRaceController {
             ft.play();
             
             FXMLStartController controller = lader.getController();
-            controller.setEinde(model.isSpelGewonnen(), model.isDood(),model.getLevel(), model.getTotAfstand());
+            controller.setMainStage(mainStage);
+            controller.setEinde(model.isDood(),model.getLevel(), model.getTotAfstand());
             
             resultScene = new Scene(root);
             mainStage.setScene(resultScene);

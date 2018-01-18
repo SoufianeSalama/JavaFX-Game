@@ -85,7 +85,6 @@ public class Voorwerp {
         switch (this.type){
             case SPELER:
                 this.beschadigingAanAnderen = 0.2;
-                //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
                 this.lengteVW = 4;
@@ -93,7 +92,6 @@ public class Voorwerp {
                 break;
             
             case VOERTUIG:
-                
                 switch (this.voertuigType){
                     case AUTO:
                         this.beschadigingAanAnderen = 0.1;
@@ -108,7 +106,7 @@ public class Voorwerp {
                         break;
                         
                     case MOTOR:
-                        this.beschadigingAanAnderen = 0.05;
+                        this.beschadigingAanAnderen = 0.1;
                         this.lengteVW = 4;
                         this.breedteVW = 2;
                         break;                        

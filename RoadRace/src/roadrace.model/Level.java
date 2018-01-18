@@ -12,6 +12,7 @@ import java.util.Random;
 import javafx.application.Platform;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
+import javafx.util.Duration;
 
 /**
  *
@@ -39,7 +40,7 @@ public class Level {
     private Random random;
     
     private Media media;
-    private MediaPlayer mediaplayer;
+    private MediaPlayer mediaplayer, mediaplayerPolitie;
         
     /**
      *
@@ -205,6 +206,8 @@ public class Level {
                         startBotsGeluid();
                         
                         if (vw.isVijand() && vw.isDood()){
+                            // Politie geluid stoppen
+                            mediaplayerPolitie.stop();
                             // Speler raakt vijand en is dood
                             vw.setVijand(false);
                             // Level verhogen
@@ -226,6 +229,24 @@ public class Level {
         return true;
     }
     
+     /**
+     * De methode "contrVerplGebotstVoertuig" controleert de beweging van een gebosts voorwerp
+     * Bijvoorbeeld, speler(actie) botst tegen een voertuig (reactie), dan moet er gecontroleerd worden of die gebotst voertuig nog tegen een ander voertuig botst
+     * en dit kan zo doorgaan, want als dit gebotst voortuig nu nog een andere voertuig botst, ....
+     * 
+     * Voor alle andere voorwerpen (dus buiten het gebotst voertuig) wordt er gecontrolleerd of deze niet op de doelcoordinaat van het gebosts voortuig
+     * staat met de methode "isOp" van de "Voorwerp" klasse die een true of false terug geeft.
+     * Zoja, dan wordt er gekeken of het een MUUR of nog een VOERTUIG
+     * 
+     * Als het een muur of voertuig is, dan wordt het beschadigingsniveau van beide voertuigen verhoogt
+     * Dan wordt er nog gecontroleerd of het voertuig een vijand is en door de beschadiging dood is, want dan is het level uitgespeeld
+     * Tenslotte wordt de methode "botsing" uitgevoerd, deze gaat bepalen hoe het voertuig wordt verplaatst na de botsing
+     * 
+     * @param reactieVW het gebotste voertuig 
+     * @param doelX het doel x-coordinaat van de speler
+     * @param doelY het doel y-coordinaat van de speler
+     * @return is er een MUUR of VOERTUIG voorwerp op de doelcoordinaten van het gebotste voertuig (true/false)
+     */
     private boolean contrVerplGebotstVoertuig(Voorwerp reactieVW,int doelX, int doelY){
         
         // Controle of er al een voorwerp op het doelcoordinaat van het gebotste voertuig staat
@@ -249,7 +270,10 @@ public class Level {
                         // en het gebotste voertuig loopt beschadeging op
                         vw.setTotBeschadigingVW(reactieVW.getBeschadigingAanAnderen());
                         
+                        
                         if (vw.isVijand() && vw.isDood()){
+                            // Politie geluid stoppen
+                            mediaplayerPolitie.stop();
                             // Speler raakt vijand en is dood
                             vw.setVijand(false);
                             // Level verhogen
@@ -356,11 +380,17 @@ public class Level {
         }
         
     }
-     
+    
+    /**
+     * De functie "verhoogLevel()" wordt gestart nadat de speler de vijand heeft verslagen
+     * Deze gaat het level met 1 verhogen en zorgt ervoor dat de level parameters juist staan m.b.v. methode "setLevelParam()"
+     * Als de speler na level 3 de vijand heeft veslagen, dan heeft deze gewonnen
+     */
     private void verhoogLevel(){
         if (this.level<3){
             this.level++;
             this.setLevelParam();
+            this.startLevelGeluid();
         }
         else{
             // Speler heeft gewonnen
@@ -370,7 +400,8 @@ public class Level {
     
     /**
      * De methode "setLevelParam" wordt uitgevoerd door de methodes "initParameters()" en "verhoogLevel"
-     * Deze methode gaat de juiste parameters voor de levels instellen
+     * Deze methode gaat de juiste parameters per level instellen
+     * Parameters zoals snelheid, de BewegingsThread interval en het starten van de VijandsTread (die na 15 seconden een nieuwe vijand toevoegt)
      */
     private void setLevelParam(){
         switch (this.level){
@@ -479,11 +510,13 @@ public class Level {
                         startBotsGeluid();
                         
                         if (vw.isVijand() && vw.isDood()){
+                             // Politie geluid stoppen
+                            mediaplayerPolitie.stop();
                             // Speler raakt vijand en is dood
+                            vw.setVijand(false);
                             // Level verhogen
                             System.out.println("Vijand verslagen -> Verhoog level");
                             this.verhoogLevel();
-                            vw.setVijand(false);
                         }
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
                         // eerste parameters is het voorwerp dat gaat botsen 
@@ -540,10 +573,26 @@ public class Level {
                 
                 this.controleNieuweVoorwerpen(nieuwVW);
                 break;
+                
+//            case 13:
+//                nieuwVW = new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, VoorwerpY, VoertuigType.MOTOR, false);
+//                voorwerpen.add(nieuwVW);
+//                
+//                this.controleNieuweVoorwerpen(nieuwVW);
+//                break;
 
         }
         
     }
+    
+    /** 
+     * De methode "controleNieuweVoorwerpen()" wordt uitgevoerd door de methode "nieuweVoorwerpen()"
+     * en gaat controlleren ofdat nieuwe voorwerpen die zijn toegevoegd niet op andere al bestaande voorwerpen komen te staan
+     * die wordt gedaan door naar alle bestaande voorwerpen te kijken en met de methode "isOp()" van Voorwerp klasse 
+     * die een true terug stuurt als de het nieuwe voorwerp op een bestaande voorwerp staat
+     * Zo ja, dan gaat we het voorwerp afhankelijk van zijn positie verschuiven
+     * @param nieuwVW het nieuwe voorwerp
+     */
     private void controleNieuweVoorwerpen(Voorwerp nieuwVW){
         Iterator<Voorwerp> voorwerpenLijst = voorwerpen.iterator();
         while(voorwerpenLijst.hasNext())   {
@@ -564,41 +613,80 @@ public class Level {
     }
 
     /**
-     *
+     * De methode "nieuwVijand()" wordt uitgevoerd door de VijandThread (die 15 seconden na een levelsverhoging wordt uitgevoerd)
+     * Deze gaat een nieuwe voertuigVoorwerp toevoegen en mbv de methide controleNieuweVoorwerpen() controleren 
+     * of er al een bestaand voorwerp op de coordinaten van dit nieuw voorwerp bestaat.
      */
     public void nieuwVijand(){
+        int vijandYWaarde = -4;
         System.out.println("nieuwe vijand");
         int randomVoorwerpX = random.nextInt(12)+4; // Horizonale waarde ligt tussen 4 en 16
-        Voorwerp nieuwVW =new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, -5, this.vijandVoertuigtype, true);
+        if (this.vijandVoertuigtype == VoertuigType.TRUCK){
+           vijandYWaarde = -9;
+        }
+        
+        Voorwerp nieuwVW =new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, vijandYWaarde, this.vijandVoertuigtype, true);
         voorwerpen.add(nieuwVW);
         controleNieuweVoorwerpen(nieuwVW);
+        startPolitieGeluid();
     }
     
     
     // AUDIO
     /**
-     * De methode "startBotsGeluid" wordt uigevoerd nadat de speler tegen een voertuig of de muur botst
+     * De methode "startBotsGeluid" wordt uitgevoerd nadat de speler tegen een voertuig of de muur botst
      * M.b.v. de klassen Media en MediaPlayer kan er een geluid afgespeeld worden
      */
     private void startBotsGeluid(){
-        String geluid = "src/roadrace/sound/botsing.mp3";
+        String geluid = "src/roadrace/sound/botsing.mp3"; // https://www.zapsplat.com/
         media = new Media(new File(geluid).toURI().toString());
         mediaplayer = new MediaPlayer(media);
         mediaplayer.play();
     }
     
     /**
-     * De methode "startBrandstofGeluid" wordt uigevoerd nadat de speler een brandstof voorwerp raakt
+     * De methode "startBrandstofGeluid" wordt uitgevoerd nadat de speler een brandstof voorwerp raakt
      * M.b.v. de klassen Media en MediaPlayer kan er een geluid afgespeeld worden
      */
     private void startBrandstofGeluid(){
-        String geluid = "src/roadrace/sound/brandstof.mp3";
+        String geluid = "src/roadrace/sound/brandstof.mp3"; // https://www.zapsplat.com/
         media = new Media(new File(geluid).toURI().toString());
         mediaplayer = new MediaPlayer(media);
         mediaplayer.play();
     }
     
+    /**
+     * De methode "startPolitieGeluid" wordt uitgevoerd nadat er een nieuwe vijand wordt toegevoegd
+     * Deze wordt gestopt als de vijand is uitgeschakeld in de botsing methodes
+     * M.b.v. de klassen Media en MediaPlayer kan er een geluid afgespeeld worden
+     */
+    private void startPolitieGeluid(){
+        String geluid = "src/roadrace/sound/politie.mp3"; // https://www.zapsplat.com/
+        media = new Media(new File(geluid).toURI().toString());
+        mediaplayerPolitie = new MediaPlayer(media);
+        mediaplayerPolitie.play();
+    }
     
+    /**
+     * De methode "startLevelGeluid" wordt uitgevoerd nadat de speler naar een volgend level gaat
+     * M.b.v. de klassen Media en MediaPlayer kan er een geluid afgespeeld worden
+     */
+    private void startLevelGeluid(){
+        String geluid = "src/roadrace/sound/level.mp3"; // https://www.zapsplat.com/
+        media = new Media(new File(geluid).toURI().toString());
+        mediaplayer = new MediaPlayer(media);
+        mediaplayer.play();
+    }
+    
+    /**
+     * De methode "stopMedia" wordt gebruikt door de RoadRaceController om bij het eindigen van het spel
+     * de nog spelende geluiden te stoppen.
+     */
+    public void stopMedia(){
+        this.mediaplayer.stop();
+        this.mediaplayerPolitie.stop();
+
+    }
     
     
     // GETTERS
@@ -661,21 +749,25 @@ public class Level {
     }  
     
     /**
-     *
-     * @return
+     * Geeft het aantal voorwerpen dat in de lijst "Voorwerpen" zit 
+     * @return voorwerpen.size()
      */
     public int getAantalVoorwerpen(){
         return this.voorwerpen.size();
     }
 
     /**
-     *
-     * @return
+     * Heeft de speler gewonnen?
+     * @return spelGewonnen true/false
      */
     public boolean isSpelGewonnen() {
         return this.spelGewonnen;
     }
     
+    /**
+     * Wat is het interval voor de BewegingsThread??
+     * @return int (1000,800,600) -> 3 levels -> 3 snelheden
+     */
     public int getBewegingsInterval(){
         return this.bewegingsInterval;
     }

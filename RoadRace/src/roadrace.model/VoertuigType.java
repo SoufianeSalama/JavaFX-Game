@@ -12,17 +12,17 @@ package roadrace;
 public enum VoertuigType {
 
     /**
-     *
+     * Voertuig type 1: Auto
      */
     AUTO,
 
     /**
-     *
+     * Voertuig type 3: Truck
      */
     TRUCK,
 
     /**
-     *
+     * Voertuig type 2: Motor
      */
     MOTOR
 }

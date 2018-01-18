@@ -17,7 +17,7 @@ public class Beweging implements Runnable {
     private FXMLRoadRaceController controller;
 
     /**
-     *
+     * De beweging klasse zorgt voor een thread die de voorwerp gaat laten bewegen
      * @param model
      * @param controller
      */
@@ -27,7 +27,11 @@ public class Beweging implements Runnable {
     }
     
      
-    
+    /**
+     * De functie run is een thread die bij elke level wordt versneld en die de voorwerpen gaat laten bewegen zolang de speler in leven is.
+     * Met behulp van de functie "beweegVoorwerpen()" en "updateViews()" van de RoadRaceController kunnen we bij elk thread interval 
+     * een nieuwe voorwerpen aanmaken en op de view laten bewegen
+     */
     @Override
     public void run() {
         while (!model.speler.isDood()){
