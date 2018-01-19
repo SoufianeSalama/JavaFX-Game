@@ -15,7 +15,8 @@ import javafx.scene.media.MediaPlayer;
 import javafx.util.Duration;
 
 /**
- *
+ * De level klasse is het eigelijke model van de MVC structuur
+ * Deze gaat de beweging van de speler controlleren (botsingen)
  * @author Soufiane
  */
 public class Level {
@@ -31,7 +32,7 @@ public class Level {
     private double brandstof, beschadiging;
     private boolean spelGewonnen;
 
-    public Voorwerp speler;
+    private Voorwerp speler;
     private VoertuigType vijandVoertuigtype;
     
     private Vijand vijand;
@@ -43,7 +44,7 @@ public class Level {
     private MediaPlayer mediaplayer, mediaplayerPolitie;
         
     /**
-     *
+     * 
      */
     public Level() {
         initParameters();
@@ -64,7 +65,6 @@ public class Level {
         
         // Vijand thread
         this.vijand = new Vijand(this);
-        
         this.setLevelParam();
         
         this.spelerX = 9;
@@ -77,7 +77,6 @@ public class Level {
             voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 2, a));
             voorwerpen.add(new Voorwerp(VoorwerpType.MUUR, 21, a));
         }
-
     }
     
     /**
@@ -88,7 +87,6 @@ public class Level {
         int dx = 1;
         int doelX = speler.getVoorwerpX() - dx ;
         int doelY = speler.getVoorwerpY();
-        
         if (controleerVerplaatsingSpeler(doelX, doelY)){
             speler.verplaatsLinks(dx);
             this.spelerX = speler.getVoorwerpX();
@@ -103,7 +101,6 @@ public class Level {
         int dx = 1;
         int doelX = speler.getVoorwerpX() + dx ;
         int doelY = speler.getVoorwerpY();
-        
         if (controleerVerplaatsingSpeler(doelX, doelY)){
             speler.verplaatsRechts(dx);
             this.spelerX = speler.getVoorwerpX();
@@ -119,7 +116,6 @@ public class Level {
         int dy = 1;
         int doelX = speler.getVoorwerpX();
         int doelY = speler.getVoorwerpY() - dy;
-        
         if (controleerVerplaatsingSpeler(doelX, doelY)){
             speler.verplaatsBoven(dy);
             this.spelerX = speler.getVoorwerpX();
@@ -135,7 +131,6 @@ public class Level {
         int dy = 1;
         int doelX = speler.getVoorwerpX();
         int doelY = speler.getVoorwerpY() + dy;
-        
         if (controleerVerplaatsingSpeler(doelX, doelY)){
             speler.verplaatsOnder(dy);
             this.spelerX = speler.getVoorwerpX();
@@ -161,7 +156,7 @@ public class Level {
      * 
      * @param doelX het doel x-coordinaat van de speler
      * @param doelY het doel y-coordinaat van de speler
-     * @return 
+     * @return result true/false
      */
     private boolean controleerVerplaatsingSpeler(int doelX, int doelY){
         
@@ -180,9 +175,7 @@ public class Level {
                     if (vw.getType()==VoorwerpType.BRANDSTOF){
                         System.out.println("Speler raakt brandstof");
                         this.brandstof = 1.00;
-                        
                         startBrandstofGeluid();
-                        
                         vw.setDood(true);
                         voorwerpen.remove(vw);
                         return true;
@@ -191,9 +184,7 @@ public class Level {
                         System.out.println("Speler raakt muur");
                         this.speler.setTotBeschadigingVW(vw.getBeschadigingAanAnderen());
                         this.beschadiging = this.speler.getTotBeschadigingVW();
-                        
                         startBotsGeluid();
-                        
                         return false;
                     }
                     else if (vw.getType()==VoorwerpType.VOERTUIG){
@@ -213,12 +204,10 @@ public class Level {
                             // Level verhogen
                             System.out.println("Vijand verslagen -> Verhoog level");
                             this.verhoogLevel();
-                            
                         }
-
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
                         // eerste parameters is het voorwerp dat gaat botsen 
-                        // tweede parameters id het voorwerp dat gebotst wordt
+                        // tweede parameters is het voorwerp dat gebotst wordt
                         this.botsting(speler,vw);
 
                         return false;
@@ -228,6 +217,8 @@ public class Level {
         }
         return true;
     }
+    
+    
     
      /**
      * De methode "contrVerplGebotstVoertuig" controleert de beweging van een gebosts voorwerp
@@ -269,8 +260,6 @@ public class Level {
                         
                         // en het gebotste voertuig loopt beschadeging op
                         vw.setTotBeschadigingVW(reactieVW.getBeschadigingAanAnderen());
-                        
-                        
                         if (vw.isVijand() && vw.isDood()){
                             // Politie geluid stoppen
                             mediaplayerPolitie.stop();
@@ -279,9 +268,7 @@ public class Level {
                             // Level verhogen
                             System.out.println("Vijand verslagen -> Verhoog level");
                             this.verhoogLevel();
-                            
                         }
-
                         // Berekenen hoe een voertuig wordt geduwd na een botsing
                         // eerste parameters is het voorwerp dat gaat botsen 
                         // tweede parameters id het voorwerp dat gebotst wordt
@@ -310,21 +297,17 @@ public class Level {
 
             if (actieVW.getVoorwerpX() < reactieVW.getVoorwerpX()){
                 //Speler staat links van het voertuig -> verplaatst het voertuig naar rechts
-                
                 if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX()+dx, reactieVW.getVoorwerpY())){
                     reactieVW.verplaatsRechts(dx);
                 }
-                
             }
             if (actieVW.getVoorwerpX() > reactieVW.getVoorwerpX()){
                 //Speler staat rechts van het voertuig -> verplaatst het voertuig naar links
-                
                 if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX()-dx, reactieVW.getVoorwerpY())){
                     reactieVW.verplaatsLinks(dx);
                 }
             }
         }
-        
         ////////////////////////////////////////////////////////
         //  Actie (botsende) voertuig en reactie (gebotste) voertuig staan op verschillende hoogtes
         ////////////////////////////////////////////////////////
@@ -333,7 +316,6 @@ public class Level {
             if (contrVerplGebotstVoertuig(reactieVW, reactieVW.getVoorwerpX(), reactieVW.getVoorwerpY()-dy)){
                 reactieVW.verplaatsBoven(dy);
             }
-            
         }
         else if (actieVW.getVoorwerpY() > (reactieVW.getVoorwerpY()) ){
             // Speler staat schuin onder het voertuig
@@ -412,6 +394,7 @@ public class Level {
                 // Vijand => Motor
                 vijandVoertuigtype = VoertuigType.MOTOR;
                 this.thread = new Thread(this.vijand);
+                this.thread.setDaemon(true);
                 this.thread.start();
                 
                 break;
@@ -422,6 +405,7 @@ public class Level {
                 vijandVoertuigtype = VoertuigType.AUTO;
                 //this.thread.start(); // WERKT NIET NA DE EERSTE AANROEP (hierboven) 
                 this.thread = new Thread(this.vijand);
+                this.thread.setDaemon(true);
                 this.thread.start();
                 break;
               
@@ -432,6 +416,7 @@ public class Level {
                 vijandVoertuigtype = VoertuigType.TRUCK;
                 //this.thread.start();// WERKT NIET NA DE EERSTE AANROEP (hierboven) 
                 this.thread = new Thread(this.vijand);
+                this.thread.setDaemon(true);
                 this.thread.start();
                 break;
         }
@@ -529,11 +514,12 @@ public class Level {
         // Afstand verhogen
         this.totAfstand += this.afstandTick;
         // Brandstof verlagen
-        if (this.brandstof>0){
-             this.brandstof -=0.01;
+        if (this.brandstof>=0.02){
+             this.brandstof -=0.02;
         }
         else{
-            this.speler.setDood(true);
+            System.out.println("Brandstof leeg");
+            speler.setDood(true);
         }
         nieuweVoorwerpen();
     }
@@ -549,38 +535,27 @@ public class Level {
         // nieuw voorwerp tonen
         int randomVoorwerp = random.nextInt(15);
         int randomVoorwerpX = random.nextInt(12)+4;// Horizonale waarde ligt tussen 4 en 16
-        int VoorwerpY = -9; // grote waarde is vooral door de truck voorwerpen
+        int VoorwerpY = -4; // grote waarde is vooral door de truck voorwerpen
         Voorwerp nieuwVW;
                 
         switch (randomVoorwerp){
             case 1:
                 nieuwVW = new Voorwerp(VoorwerpType.BRANDSTOF, randomVoorwerpX,VoorwerpY);
                 voorwerpen.add(nieuwVW);
-                
                 this.controleNieuweVoorwerpen(nieuwVW);
                 break;
 
             case 4:
                 nieuwVW = new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, VoorwerpY, VoertuigType.AUTO, false);
                 voorwerpen.add(nieuwVW);
-                
                 this.controleNieuweVoorwerpen(nieuwVW);
                 break;
                 
             case 9:
                 nieuwVW = new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, VoorwerpY, VoertuigType.MOTOR, false);
                 voorwerpen.add(nieuwVW);
-                
                 this.controleNieuweVoorwerpen(nieuwVW);
                 break;
-                
-//            case 13:
-//                nieuwVW = new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, VoorwerpY, VoertuigType.MOTOR, false);
-//                voorwerpen.add(nieuwVW);
-//                
-//                this.controleNieuweVoorwerpen(nieuwVW);
-//                break;
-
         }
         
     }
@@ -594,18 +569,27 @@ public class Level {
      * @param nieuwVW het nieuwe voorwerp
      */
     private void controleNieuweVoorwerpen(Voorwerp nieuwVW){
+        boolean result = false;
         Iterator<Voorwerp> voorwerpenLijst = voorwerpen.iterator();
         while(voorwerpenLijst.hasNext())   {
             Voorwerp vw = voorwerpenLijst.next();
             if (vw != nieuwVW){
-                // Enkel kijken naar voorwerpen die al bestaan => dus alles buiten het nieuw voorwerp
-                if (vw.isOp(nieuwVW, nieuwVW.getVoorwerpX(),nieuwVW.getVoorwerpY())){
-                    // nieuw voorwerp bevindt zich op een bestaand voorwerp -> verplaaten
-                    if (nieuwVW.getVoorwerpX()>=2 && nieuwVW.getVoorwerpX()<=15){
-                        nieuwVW.verplaatsRechts(3);
+                while(!result){
+                    // Enkel kijken naar voorwerpen die al bestaan => dus alles buiten het nieuw voorwerp
+                    if (vw.isOp(nieuwVW, nieuwVW.getVoorwerpX(),nieuwVW.getVoorwerpY())){
+                        // nieuw voorwerp bevindt zich op een bestaand voorwerp -> verplaaten
+                        //nieuwVW.verplaatsBoven(5);
+                        if (nieuwVW.getVoorwerpX()>=2 && nieuwVW.getVoorwerpX()<=15){
+                            nieuwVW.verplaatsBoven(1);
+                            //nieuwVW.verplaatsRechts(3);
+                        }
+                        else{
+                            nieuwVW.verplaatsBoven(1);
+                            //nieuwVW.verplaatsLinks(3);
+                        }
                     }
                     else{
-                        nieuwVW.verplaatsLinks(3);
+                        result = true;
                     }
                 }
             }
@@ -624,13 +608,11 @@ public class Level {
         if (this.vijandVoertuigtype == VoertuigType.TRUCK){
            vijandYWaarde = -9;
         }
-        
         Voorwerp nieuwVW =new Voorwerp(VoorwerpType.VOERTUIG, randomVoorwerpX, vijandYWaarde, this.vijandVoertuigtype, true);
         voorwerpen.add(nieuwVW);
         controleNieuweVoorwerpen(nieuwVW);
         startPolitieGeluid();
     }
-    
     
     // AUDIO
     /**
@@ -683,9 +665,13 @@ public class Level {
      * de nog spelende geluiden te stoppen.
      */
     public void stopMedia(){
-        this.mediaplayer.stop();
-        this.mediaplayerPolitie.stop();
+        if (mediaplayer !=null){
+            this.mediaplayer.stop();
+        }
+        if (mediaplayerPolitie !=null){
+            this.mediaplayerPolitie.stop();
 
+        }
     }
     
     
@@ -740,8 +726,8 @@ public class Level {
     }
     
     /**
-     *
-     * @return
+     * Geeft de voorwerplijst terug in de vorm van een iterator.
+     * @return voorwerpten.iterator() lijst van voorwerpen
      */
     public Iterator<Voorwerp> getVoorwerpenLijst()
     {
@@ -770,6 +756,14 @@ public class Level {
      */
     public int getBewegingsInterval(){
         return this.bewegingsInterval;
+    }
+    
+    /**
+     * Geeft het voorwerp object speler
+     * @return speler de voorwerp
+     */
+    public Voorwerp getSpeler(){
+        return this.speler;
     }
     
 }

@@ -8,7 +8,7 @@ package roadrace;
 import javafx.application.Platform;
 
 /**
- *
+ * De beweging klasse wordt gebruikt als thread om de voorwerpen te laten bewegen (vallen)
  * @author Soufiane
  */
 public class Beweging implements Runnable {
@@ -34,19 +34,27 @@ public class Beweging implements Runnable {
      */
     @Override
     public void run() {
-        while (!model.speler.isDood()){
+        while (!model.getSpeler().isDood()){
             try{
                 Thread.sleep(model.getBewegingsInterval());
                 
                 Platform.runLater(()->{
-                    controller.beweegVoorwerpen();
-                    controller.updateViews();
+                    if (!model.getSpeler().isDood()){
+                        controller.beweegVoorwerpen();
+                        controller.updateViews();
+                    }
+                    else{
+                        controller.spelerDood();
+                    }
+                    
                 });
             }
             catch(InterruptedException e){
                 System.out.println("Probleem met run functie " + e.getMessage());
             }
         }
+        
+       
     }
     
 }

@@ -6,7 +6,7 @@
 package roadrace;
 
 /**
- *
+ * De VoertuigType bevat de verschillende soorten voertuigen
  * @author Soufiane
  */
 public enum VoertuigType {

@@ -20,7 +20,8 @@ import roadrace.Voorwerp;
 import roadrace.VoorwerpView;
 
 /**
- *
+ * De levelView is de hoofdview van dit project, zorgt ervoor dat er voorwerpviews van voorwerpen gemaakt worden
+ * Zorgt er ook voor dat er views toegevoegd of verwijderd worden
  * @author Soufiane
  */
 public class LevelView extends Region{
@@ -40,7 +41,6 @@ public class LevelView extends Region{
         vwViews = new ArrayList<>();
         this.initBackground();
         this.addVoorwerpenViews();
-        
     }
     
     /**
@@ -72,7 +72,9 @@ public class LevelView extends Region{
     }
     
     /**
-     * De methode "updateVWViews()" 
+     * De methode "updateVWViews()" wordt opgeroepen vanuit de controller, nadat de speler beweegt of de thread voorwerpen laat bewegen(vallen)
+     * en gaat eerste controleren of er views van voorwerpen aangemaakt of verwijdert moeten worden
+     * en gaat dan elke voorwerpview updaten
      */
     public void updateVWViews(){
         checkVoorwerpenEnViews();
@@ -131,7 +133,7 @@ public class LevelView extends Region{
     /**
      * De methode controleerViewLijst gaat voor het meegekregen voorwerp controleren of er van deze een view bestaat.
      * Bij een true bestaat er een view van het meegesturude voorwerp, dus er wordt uiteindelijk GEEN nieuwe view aangemaakt
-     * @param vw
+     * @param vw voorwerp
      * @return result true/false
      */
     private boolean controleerViewLijst(Voorwerp vw){
@@ -147,9 +149,6 @@ public class LevelView extends Region{
         return result;
     }
     
-    
-    
-    //////////////////////
     
     /**
      * Tijdens het spel worden er voorwerpen verwijderd uit de voorwerpenlijst, bijvoorbeeld nadat de speler een brandstof opneemt.
@@ -170,7 +169,7 @@ public class LevelView extends Region{
     /**
      * De methode controleerVoorwerplijst gaat voor het meegekregen voorwerpview controleren of het voorwerp van deze view nog bestaat.
      * Bij een true bestaat het voorwerp nog, dus deze wordt uiteindelijk NIET verwijderd
-     * @param vww
+     * @param vww voorwerpview
      * @return result true/false
      */
     private boolean controleerVoorwerplijst(VoorwerpView vww){
@@ -183,15 +182,5 @@ public class LevelView extends Region{
             }
         }
         return result;
-
-        
     }
-    
-    
-    
-    
-    
-    
-    
-    
 }

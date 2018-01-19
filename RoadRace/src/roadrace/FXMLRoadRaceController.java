@@ -15,7 +15,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- *
+ * De RoadRaceController is de belangrijkste controller
+ * Deze gaat de KeyEvents van de gebruiker opvangen en uitvoeren (speler bewegen)
+ * Deze gaat bij verlies of winst overschakelen naar de resultaat scene en de StartController
  * @author Soufiane
  */
 public class FXMLRoadRaceController {
@@ -68,10 +70,10 @@ public class FXMLRoadRaceController {
      * De functie "beweegSpeler()" wordt uitgevoerd nadat een gebruiker op de toets klikt
      * Afhankelijk van welke toets die meegestuurd wordt met de parameter "e" kunnen we de speler gaan bewegen
      * Dit wordt enkel gedaan zoals de speler niet dood is en niet heeft gewonnen
-     * @param e
+     * @param e op welke toets heeft de speler geklikt
      */
     public void beweegSpeler(KeyEvent e){
-        if (!model.speler.isDood() && !model.isSpelGewonnen()){
+        if (!model.getSpeler().isDood() && !model.isSpelGewonnen()){
             switch (e.getCode()){
                 case LEFT:
                     model.beweegSpelerLinks();
@@ -95,6 +97,16 @@ public class FXMLRoadRaceController {
             startResultaat();
         }
         
+    }
+    
+    /**
+     * 
+     * 
+     */
+    public void spelerDood(){
+        System.out.println("Speler is dood"); 
+        this.model.stopMedia();
+        startResultaat();
     }
     
     /**
@@ -135,10 +147,8 @@ public class FXMLRoadRaceController {
      */
     private void startResultaat(){
         FXMLLoader lader = new FXMLLoader(getClass().getResource("FXMLStartScherm.fxml"));
-        
         try{
             Parent root = lader.load();
-            
             // Fade in/out
             FadeTransition ft = new FadeTransition(Duration.millis(3000), root);
             ft.setFromValue(0);
@@ -158,7 +168,4 @@ public class FXMLRoadRaceController {
             System.out.println("roadrace.FXMLRoadRaceController.startResultaat()");
         }
     }
-    
-    
-    
 }

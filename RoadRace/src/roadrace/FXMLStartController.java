@@ -13,7 +13,9 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- *
+ * De StartController wordt gebruikt om de resultaten nadat een speler wint of verliest te tonen
+ * Ook kan de gebruiker het spel opnieuw starten, door de over te schakelen naar de RoadRaceController en de game scene
+ * 
  * @author Soufiane
  */
 public class FXMLStartController {

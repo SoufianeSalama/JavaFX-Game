@@ -20,7 +20,7 @@ import roadrace.VoorwerpType;
 import roadrace.VoorwerpType;
 
 /**
- * De VoorwerpView klasse
+ * De VoorwerpView klasse wordt gebruikt om voorwerpviews te maken van een voorwerp
  * @author Soufiane
  */
 public class VoorwerpView extends Group{
@@ -164,7 +164,7 @@ public class VoorwerpView extends Group{
     }
     
     /**
-     * De methode "tekenVoertuigTruck()" maakt een view voor het voorwerp motor
+     * De methode "tekenVoertuigTruck()" maakt een view voor het voorwerp truck
      * Deze gaat een image inladen en vergroten afhankelijk van de vergroting van de levelView
      * @return imageView de image van de truck
      */
@@ -195,6 +195,7 @@ public class VoorwerpView extends Group{
                 else if (vw.getTotBeschadigingVW() >=0.68 && vw.getTotBeschadigingVW() <=1){
                     this.vwIndicator.setStroke(Color.RED);
                 }
+                
         }
     }
     

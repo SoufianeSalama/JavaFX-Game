@@ -8,7 +8,7 @@ package roadrace;
 import javafx.application.Platform;
 
 /**
- *
+ * De vijand klasse wordt als thread gebruikt om nieuwe vijanden na een periode van 15 sec (na een levelsverhoging) aan te maken
  * @author Soufiane
  */
 public class Vijand implements Runnable {
@@ -32,7 +32,9 @@ public class Vijand implements Runnable {
         try{
             Thread.sleep(15000);
             Platform.runLater(()-> {
-                this.model.nieuwVijand();
+                if (!model.getSpeler().isDood()){
+                    model.nieuwVijand();
+                }
             });
         }
         catch(InterruptedException e){

@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- *
+ * De RoadRace klasse bevat de main van dit project
  * @author Soufiane
  */
 public class RoadRace extends Application {

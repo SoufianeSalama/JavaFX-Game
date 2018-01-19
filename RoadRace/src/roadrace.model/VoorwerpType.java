@@ -7,7 +7,7 @@ package roadrace;
  */
 
 /**
- *
+ * De VoorwerpType enum bevat de verschillende soorten voorwerpen
  * @author Soufiane
  */
 public enum VoorwerpType 

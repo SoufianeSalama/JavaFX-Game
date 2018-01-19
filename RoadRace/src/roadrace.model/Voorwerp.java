@@ -6,7 +6,8 @@
 package roadrace;
 
 /**
- *
+ * De voorwerp klasse wordt gebruikt om voorwerp objecten te maken
+ * Er bestaan verschillende soorten voorwerpen, deze zijn opgelijst in de enum "VoorwerpType"
  * @author Soufiane
  */
 public class Voorwerp {
@@ -36,7 +37,6 @@ public class Voorwerp {
     
     /**
      * Eerste constructor van de voorwerp klasse, gebruikt om de voorwerpen muur en brandstof aan te maken
-     * 
      * @param type VoorwerpType
      * @param x x-coordinaat van het voorwerp
      * @param y y-coordinaat van het voorwerp
@@ -45,11 +45,10 @@ public class Voorwerp {
         this.type = type;
         this.voorwerpX = x;
         this.voorwerpY = y;
-        this.vijand = vijand;
+        this.vijand = false;
         
         this.dood = false;
         this.totBeschadigingVW = 0.00;
-        
         this.voertuigType = null;
         
         this.setVWParameters();
@@ -106,7 +105,7 @@ public class Voorwerp {
                         break;
                         
                     case MOTOR:
-                        this.beschadigingAanAnderen = 0.1;
+                        this.beschadigingAanAnderen = 0.05;
                         this.lengteVW = 4;
                         this.breedteVW = 2;
                         break;                        
@@ -118,7 +117,6 @@ public class Voorwerp {
                 
             case BRANDSTOF:
                 this.beschadigingAanAnderen = 0.0;
-                //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = true;
                 this.lengteVW = 2;
@@ -127,7 +125,6 @@ public class Voorwerp {
                 
             case MUUR:
                 this.beschadigingAanAnderen = 0.15;
-                //this.beschadigingAanZichzelf = 0.0;
                 this.duwbaar = false;
                 this.neembaar = false;
                 this.lengteVW = 1;
@@ -296,24 +293,18 @@ public class Voorwerp {
         this.voorwerpY -=dy;
     }
     
-    
-    
     /**
-     * 
-     * De methode "isOp()" controlleert of een voorwerp zich bevindt op de doelcoordinaten van de speler of van een gebotst voertuig.
-     * Deze methode wordt voor alle voorwerpen uitgevoerd
-     * 
-     * @param actie
-     * @param doelX
-     * @param doelY
+     * De methode "isOp()" moet controlleren of het mogelijk is dat dit voorwerp zich wilt verplaatsten op de coördianten van het meegestuurde voorwerp
+     * @param anderVW het voorwerp dat mogelijk op de doelcoordiaten van dit voorwerp kan staan
+     * @param doelX de horizontale doelpositie van dit voorwerp
+     * @param doelY de verticale doelpositie van dit voorwerp
      * @return 
      */
-    public boolean isOp(Voorwerp actie, int doelX, int doelY){
+    public boolean isOp(Voorwerp anderVW, int doelX, int doelY){
 
-        //if (this.voorwerpX == doelX || (doelX + actie.breedteVW-1 == this.voorwerpX) || (this.voorwerpX + this.breedteVW-1 == doelX ) ){
-        if ( ((doelX>=this.voorwerpX) && (doelX<= this.voorwerpX+this.breedteVW-1)) || ( (doelX <= this.voorwerpX) && (doelX + actie.breedteVW - 1>=this.voorwerpX)) ){
+        if ( ((doelX>=this.voorwerpX) && (doelX<= this.voorwerpX+this.breedteVW-1)) || ( (doelX <= this.voorwerpX) && (doelX + anderVW.breedteVW - 1>=this.voorwerpX)) ){
 
-            if ( ((doelY>=this.voorwerpY) && (doelY<= this.voorwerpY+this.lengteVW-1)) || ( (doelY <= this.voorwerpY) && (doelY + actie.lengteVW - 1>=this.voorwerpY)) ){
+            if ( ((doelY>=this.voorwerpY) && (doelY<= this.voorwerpY+this.lengteVW-1)) || ( (doelY <= this.voorwerpY) && (doelY + anderVW.lengteVW - 1>=this.voorwerpY)) ){
                return true;
             }
         }
